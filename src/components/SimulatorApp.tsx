@@ -13,6 +13,7 @@ import { AlbumStrip } from "./AlbumStrip";
 import { ComparisonSlider } from "./ComparisonSlider";
 import { ControlPanel } from "./ControlPanel";
 import { ExplanationPanel } from "./ExplanationPanel";
+import { ExposureTriangleDiagram } from "./ExposureTriangleDiagram";
 import { IndicatorBadges } from "./IndicatorBadges";
 import { SceneSelector } from "./SceneSelector";
 
@@ -45,6 +46,7 @@ export function SimulatorApp() {
 
   const processed = useProcessedFrame(pipelineInput, isInteracting);
   const assessment = useMemo(() => assessSettings({ settings: camera.settings, scene }), [camera.settings, scene]);
+  const stops = useMemo(() => calculateStops(camera.settings, scene.baseSettings), [camera.settings, scene]);
 
   async function handleSave() {
     if (!processed.image) return;
@@ -118,6 +120,8 @@ export function SimulatorApp() {
         onReset={camera.reset}
       />
 
+      <p className="simulator-app__triangle-caption">Where these settings sit on the triangle:</p>
+      <ExposureTriangleDiagram isoStops={stops.isoStops} apertureStops={stops.apertureStops} shutterStops={stops.shutterStops} />
       <IndicatorBadges assessment={assessment} />
       <ExplanationPanel assessment={assessment} />
 
