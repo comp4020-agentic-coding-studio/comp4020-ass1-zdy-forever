@@ -14,5 +14,5 @@
     "noFallthroughCasesInSwitch": true,
     "jsx": "react-jsx"
   },
-  "include": ["*.ts", "*.tsx", "spec"]
+  "include": ["*.ts", "*.tsx", "spec", "src", "e2e"]
 }
