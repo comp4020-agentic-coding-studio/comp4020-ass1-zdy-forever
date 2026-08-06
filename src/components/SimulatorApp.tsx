@@ -8,10 +8,12 @@ import type { PipelineInput } from "../processing/pipeline";
 import { useProcessedFrame } from "../processing/useProcessedFrame";
 import { ALBUM_CAPACITY, useAlbum } from "../state/useAlbum";
 import { useCameraSettings } from "../state/useCameraSettings";
+import { AlbumComparisonView } from "./AlbumComparisonView";
+import { AlbumStrip } from "./AlbumStrip";
+import { ComparisonSlider } from "./ComparisonSlider";
 import { ControlPanel } from "./ControlPanel";
 import { ExplanationPanel } from "./ExplanationPanel";
 import { IndicatorBadges } from "./IndicatorBadges";
-import { ProcessedCanvas } from "./ProcessedCanvas";
 import { SceneSelector } from "./SceneSelector";
 
 export function SimulatorApp() {
@@ -23,6 +25,7 @@ export function SimulatorApp() {
   const album = useAlbum();
   const [saveStatus, setSaveStatus] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
   const pipelineInput = useMemo<PipelineInput | null>(() => {
     if (assets.status !== "ready") return null;
@@ -64,16 +67,40 @@ export function SimulatorApp() {
     }
   }
 
+  function toggleSelect(id: string) {
+    setSelectedIds((previous) => {
+      if (previous.includes(id)) return previous.filter((selectedId) => selectedId !== id);
+      // Only ever compares the two most recently picked experiments — picking
+      // a third swaps out the oldest selection rather than growing unbounded.
+      return previous.length < 2 ? [...previous, id] : [previous[1], id];
+    });
+  }
+
+  function handleRemove(id: string) {
+    album.remove(id);
+    setSelectedIds((previous) => previous.filter((selectedId) => selectedId !== id));
+  }
+
+  function handleClear() {
+    album.clear();
+    setSelectedIds([]);
+  }
+
+  const [firstSelected, secondSelected] = selectedIds
+    .map((id) => album.experiments.find((experiment) => experiment.id === id))
+    .filter((experiment): experiment is NonNullable<typeof experiment> => experiment !== undefined);
+
   return (
     <div className="simulator-app">
       <SceneSelector scenes={SCENES} selectedId={scene.id} onSelect={setSceneId} />
 
       <div className="simulator-app__stage">
         {assets.status === "error" && <p role="alert">Couldn't load this scene's images: {assets.error.message}</p>}
-        <ProcessedCanvas
-          image={processed.image ?? (assets.status === "ready" ? assets.assets.source : null)}
+        <ComparisonSlider
+          original={assets.status === "ready" ? assets.assets.source : null}
+          simulated={processed.image ?? (assets.status === "ready" ? assets.assets.source : null)}
           isProcessing={assets.status === "loading" || processed.isProcessing}
-          label={`${scene.title}, simulated`}
+          label={scene.title}
         />
       </div>
 
@@ -100,6 +127,16 @@ export function SimulatorApp() {
         </button>
         {saveStatus && <p aria-live="polite">{saveStatus}</p>}
       </div>
+
+      <AlbumStrip
+        experiments={album.experiments}
+        selectedIds={selectedIds}
+        onToggleSelect={toggleSelect}
+        onRemove={handleRemove}
+        onClear={handleClear}
+      />
+
+      {firstSelected && secondSelected && <AlbumComparisonView first={firstSelected} second={secondSelected} />}
     </div>
   );
 }

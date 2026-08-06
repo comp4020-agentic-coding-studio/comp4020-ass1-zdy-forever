@@ -105,4 +105,39 @@ describe("SimulatorApp", () => {
     await waitForFrame();
     expect(screen.getByText("ISO 200")).toBeInTheDocument();
   });
+
+  it("selecting two saved experiments shows the comparison view", async () => {
+    const user = userEvent.setup();
+    render(<SimulatorApp />);
+    await waitForFrame();
+
+    const saveButton = screen.getByRole("button", { name: /Save to album/ });
+    await user.click(saveButton);
+    await waitFor(() => expect(saveButton).toHaveTextContent("(1/6)"));
+
+    await user.click(screen.getByRole("button", { name: "Increase ISO" }));
+    await waitForFrame();
+    await user.click(saveButton);
+    await waitFor(() => expect(saveButton).toHaveTextContent("(2/6)"));
+
+    const thumbnails = screen.getAllByRole("button", { name: /Portrait/ }).filter((button) => button.querySelector("img"));
+    await user.click(thumbnails[0]);
+    await user.click(thumbnails[1]);
+
+    expect(screen.getByRole("heading", { name: "Comparing two experiments" })).toBeInTheDocument();
+  });
+
+  it("removing a saved experiment drops it from the album strip", async () => {
+    const user = userEvent.setup();
+    render(<SimulatorApp />);
+    await waitForFrame();
+
+    const saveButton = screen.getByRole("button", { name: /Save to album/ });
+    await user.click(saveButton);
+    await waitFor(() => expect(saveButton).toHaveTextContent("(1/6)"));
+
+    await user.click(screen.getByRole("button", { name: /Remove/ }));
+    expect(saveButton).toHaveTextContent("(0/6)");
+    expect(screen.getByText(/Save a frame from the simulator/)).toBeInTheDocument();
+  });
 });
