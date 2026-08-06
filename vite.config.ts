@@ -1,3 +1,4 @@
+/// <reference types="vitest/config" />
 import { readdirSync } from "node:fs";
 import { join } from "node:path";
 import react from "@vitejs/plugin-react";
@@ -27,5 +28,12 @@ export default defineConfig({
     rollupOptions: {
       input: htmlEntries(),
     },
+  },
+  test: {
+    // Individual test files opt into jsdom via a `// @vitest-environment
+    // jsdom` pragma; this setup file is a no-op under the default node
+    // environment (it guards on `typeof window`), so it's safe to load
+    // globally rather than per-file.
+    setupFiles: ["vitest-canvas-mock", "@testing-library/jest-dom/vitest"],
   },
 });
