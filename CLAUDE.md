@@ -152,6 +152,20 @@ means building legibly is part of building well.
 You don't need a name, a student number, or any identity file in the repo: we
 know whose repo it is. Spend the effort on the work.
 
+## Stack note: React is client-side only here
+
+This assignment swapped the template's plain HTML/TS/Vite for React + Vite +
+TypeScript (`main.tsx` mounts `<App />` into `#root`). No SSR/SSG is wired up,
+so anything React renders only exists after the browser runs the bundle.
+`spec/*.test.ts` and `spec/invariants.test.ts` parse `dist/*.html` with JSDOM
+**without executing scripts** — they see the built markup, not the mounted
+app. Practical consequence: an interactive control added only inside `<App />`
+won't satisfy a spec test that greps the static HTML (e.g. "has an
+interactive control"); either keep load-bearing structural markup (the `h1`,
+`nav`, any element a test asserts on) static in `index.html` outside `#root`,
+or add real prerendering if the prototype needs the check to see rendered
+React output.
+
 ## This file is yours
 
 This CLAUDE.md is a starting point, not a fixed rulebook. As you learn what your
