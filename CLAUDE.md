@@ -166,6 +166,62 @@ interactive control"); either keep load-bearing structural markup (the `h1`,
 or add real prerendering if the prototype needs the check to see rendered
 React output.
 
+## Assignment 1 rules: Every Setting Costs Something
+
+This prototype is a photographic exposure-triangle explainer: pick a scene,
+move ISO/aperture/shutter, watch a real Canvas pixel pipeline (exposure →
+noise → depth-of-field blur → motion blur) render the consequence, save up to
+six results to an album, compare two side by side. Rules specific to this
+build, learned or confirmed while building it:
+
+- **Static only.** No backend, no server-side rendering. Everything —
+  including the four scenes' source images/masks/depth maps — is a static
+  asset shipped in `dist/` and processed client-side in the browser (main
+  thread or a Worker). If a feature needs a server, it's out of scope.
+- **Keep the relative-base trick, and don't trust it on faith.** `base: "./"`
+  in `vite.config.ts` makes built HTML/CSS/JS resolve under a GitHub Pages
+  subpath, but that only covers assets Vite itself rewrites. Anything read at
+  runtime via a plain string path (scene images loaded through `image.src =
+  url`, for instance) needs the same `./`-relative convention applied by hand
+  — `src/domain/scenes.ts` shipped with root-absolute `/scenes/...` paths that
+  passed every local check and would have 404'd every scene on the real
+  deployed URL. `e2e/deployment-subpath.spec.ts` serves the built `dist/`
+  under an arbitrary nested prefix specifically to catch this class of bug
+  before it ships (see `PROCESS.md`). Any new asset reference gets the same
+  treatment and, ideally, the same test.
+- **One central mechanic, not three separate toys.** ISO, aperture, and
+  shutter all feed the same pipeline and the same live exposure-triangle
+  diagram — there's no per-setting mini-demo bolted on the side. A new
+  feature that doesn't route through `src/processing/pipeline.ts` or explain
+  itself via `src/domain/explain.ts` is probably scope creep.
+- **Reject scope creep.** The brief specifies four scenes, six album slots,
+  one comparison view. Don't add a fifth scene, a seventh slot, or a second
+  comparison mode because it'd be "nice to have" — extra surface area is
+  extra untested surface area, and the brief already draws the line.
+- **No pre-rendered-combination cheating.** Every ISO/aperture/shutter
+  combination is computed live from the pipeline functions, never looked up
+  from a table of pre-rendered images for "the common cases." The
+  image-processing tests (`src/processing/*.test.ts`) assert on pixel math,
+  not on which asset got swapped in.
+- **Album is capped at exactly six, enforced structurally.** `useAlbum`
+  blocks a 7th save outright rather than silently overwriting the oldest —
+  confirmed both by a unit test and by `e2e/album.spec.ts` clicking Save a
+  7th time and asserting nothing changes.
+- **No stale renders.** `useProcessedFrame`'s request versioning must mean
+  the canvas never shows a frame for settings the user has since changed —
+  if you drag a slider mid-render, the in-flight result is discarded, not
+  painted late. Treat any visible flash of an old frame as a regression, not
+  a performance quirk.
+- **Test desktop, mobile, keyboard, and resize — not just desktop-with-a-mouse.**
+  The Playwright suite runs both a desktop-Chrome and a Pixel-7-emulation
+  project, has a dedicated keyboard-only tab-order spec, and checks for
+  horizontal overflow at six widths (375/390/768/1024/1440/1920). A change
+  that only gets eyeballed at one viewport isn't verified.
+- **Never fabricate process evidence.** `PROCESS.md` and
+  `reflections/assignment-1.md` cite only commits and check transitions that
+  actually happened, in this repo's real history — not a plausible-sounding
+  narrative written in advance. If a moment didn't happen, it doesn't go in.
+
 ## This file is yours
 
 This CLAUDE.md is a starting point, not a fixed rulebook. As you learn what your
