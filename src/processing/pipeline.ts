@@ -5,6 +5,7 @@ import { handheldShakeStrength, motionBlurKernelLength, shutterSlownessStops, su
 import type { CameraSettings } from "../domain/types";
 import type { PixelImage } from "../domain/types";
 import { boxBlur, readMaskValue } from "./blur";
+import { getBlurPyramid } from "./blurCache";
 
 function copyImage(image: PixelImage): PixelImage {
   return { width: image.width, height: image.height, data: Uint8ClampedArray.from(image.data) };
@@ -34,6 +35,12 @@ export type DepthOfFieldInput = {
   subjectMask?: PixelImage;
   focusDepth: number;
   wideningStops: number;
+  // Precomputed blur-level pyramid (see blurCache.ts). Building it is the
+  // expensive part of this stage; callers that already have one (keyed by
+  // scene + resolution, since it only depends on the raw source image, not
+  // on camera settings) should pass it in rather than let it be rebuilt
+  // here on every call.
+  pyramid?: PixelImage[];
 };
 
 // Blends between a precomputed blur pyramid based on each pixel's distance
@@ -46,7 +53,7 @@ export function applyDepthOfFieldStage(image: PixelImage, input: DepthOfFieldInp
     return copyImage(image);
   }
 
-  const pyramid = BLUR_LEVELS_PX.map((radius) => boxBlur(image, radius));
+  const pyramid = input.pyramid ?? BLUR_LEVELS_PX.map((radius) => boxBlur(image, radius));
   const maxIndex = BLUR_LEVELS_PX.length - 1;
   const { width, height, data } = image;
   const output = new Uint8ClampedArray(data.length);
@@ -177,28 +184,39 @@ export type PipelineInput = {
   sceneId: string;
 };
 
-// Runs the full exposure -> noise -> depth-of-field -> motion-blur pipeline
+// Runs the full depth-of-field -> exposure -> noise -> motion-blur pipeline
 // against one source frame. Every stage is a pure function over PixelImage,
 // so this same function runs unchanged on the main thread or inside a
 // worker, and is exercised directly by pipeline.test.ts with tiny synthetic
 // fixtures.
+//
+// Depth of field runs first, against the raw source, so it can use a blur
+// pyramid cached per scene+resolution (blurCache.ts) — the pyramid depends
+// only on the source pixels, never on camera settings, so this lets every
+// slider drag reuse it instead of re-blurring the whole frame each time.
 export function runPipeline(input: PipelineInput): PixelImage {
+  let image = input.source;
+
+  if (input.depthMap || input.subjectMask) {
+    const wideningStops = apertureWideningStops(input.settings.aperture, input.baseSettings.aperture);
+    const pyramid = getBlurPyramid(input.sceneId, input.source);
+    image = applyDepthOfFieldStage(input.source, {
+      depthMap: input.depthMap,
+      subjectMask: input.subjectMask,
+      focusDepth: input.focusDepth ?? 0.5,
+      wideningStops,
+      pyramid,
+    });
+  }
+
   const stops = calculateStops(input.settings, input.baseSettings);
-  let image = applyExposureStage(input.source, stops.totalStops);
+  image = applyExposureStage(image, stops.totalStops);
 
   const noiseAmount = noiseStrength(noiseStopsAboveBase(input.settings.iso, input.baseSettings.iso));
   if (noiseAmount > 0) {
     const seed = hashSeed(input.sceneId, input.settings.iso);
     image = applyNoise(image, { strength: noiseAmount, seed });
   }
-
-  const wideningStops = apertureWideningStops(input.settings.aperture, input.baseSettings.aperture);
-  image = applyDepthOfFieldStage(image, {
-    depthMap: input.depthMap,
-    subjectMask: input.subjectMask,
-    focusDepth: input.focusDepth ?? 0.5,
-    wideningStops,
-  });
 
   const slownessStops = shutterSlownessStops(input.settings.shutterSeconds, input.baseSettings.shutterSeconds);
   const motionStrength = subjectMotionBlurStrength(slownessStops);
