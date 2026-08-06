@@ -11,9 +11,16 @@ export function ProcessedCanvas({ image, isProcessing, label }: ProcessedCanvasP
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
-    if (!image) return;
     const canvas = canvasRef.current;
     if (!canvas) return;
+    if (!image) {
+      // A cleared canvas, not a leftover frame: without this, the canvas
+      // keeps showing whatever was last painted onto it even after the
+      // caller has decided there's nothing current to display.
+      canvas.width = 0;
+      canvas.height = 0;
+      return;
+    }
     canvas.width = image.width;
     canvas.height = image.height;
     const context = canvas.getContext("2d");

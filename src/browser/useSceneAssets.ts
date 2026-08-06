@@ -12,11 +12,18 @@ export type SceneAssets = {
 export type UseSceneAssetsResult =
   | { status: "loading" }
   | { status: "error"; error: Error }
-  | { status: "ready"; assets: SceneAssets };
+  | { status: "ready"; sceneId: string; assets: SceneAssets };
 
 // Loads a scene's source image plus whichever optional masks it declares.
 // Keyed on scene.id (not scene identity) so a re-render with the same scene
-// doesn't refetch, but switching scenes always does.
+// doesn't refetch, but switching scenes always does. The ready result carries
+// its own sceneId so a caller can tell "ready" apart from "ready, but still
+// for the scene *before* this one" — on the render right after a scene
+// switch, this hook's state hasn't updated yet, so it still reports the old
+// scene's assets as ready while `scene` itself already points at the new
+// one. Without sceneId to check against, a caller has no way to notice that
+// mismatch and can end up feeding one scene's pixels through the pipeline
+// tagged with another scene's id.
 export function useSceneAssets(scene: SceneDefinition): UseSceneAssetsResult {
   const [result, setResult] = useState<UseSceneAssetsResult>({ status: "loading" });
 
@@ -33,7 +40,7 @@ export function useSceneAssets(scene: SceneDefinition): UseSceneAssetsResult {
           scene.motionMask ? loadPixelImage(scene.motionMask) : Promise.resolve(undefined),
         ]);
         if (cancelled) return;
-        setResult({ status: "ready", assets: { source, depthMap, subjectMask, motionMask } });
+        setResult({ status: "ready", sceneId: scene.id, assets: { source, depthMap, subjectMask, motionMask } });
       } catch (error) {
         if (cancelled) return;
         setResult({ status: "error", error: error instanceof Error ? error : new Error(String(error)) });

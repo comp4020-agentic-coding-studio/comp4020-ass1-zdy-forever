@@ -28,13 +28,20 @@ export function SimulatorApp() {
   const [isSaving, setIsSaving] = useState(false);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
+  // On the render right after a scene switch, `assets` can still report
+  // "ready" for the *previous* scene (its own effect hasn't committed yet) —
+  // checking sceneId too, not just status, is what stops that stale-scene
+  // source from ever being tagged with the new scene's id and fed through
+  // the depth-of-field cache under the wrong key.
+  const currentAssets = assets.status === "ready" && assets.sceneId === scene.id ? assets.assets : null;
+
   const pipelineInput = useMemo<PipelineInput | null>(() => {
-    if (assets.status !== "ready") return null;
+    if (!currentAssets) return null;
     return {
-      source: assets.assets.source,
-      depthMap: assets.assets.depthMap,
-      subjectMask: assets.assets.subjectMask,
-      motionMask: assets.assets.motionMask,
+      source: currentAssets.source,
+      depthMap: currentAssets.depthMap,
+      subjectMask: currentAssets.subjectMask,
+      motionMask: currentAssets.motionMask,
       motionVector: scene.motionVector,
       focusDepth: scene.focusDepth,
       handheldThreshold: scene.handheldThreshold,
@@ -42,7 +49,7 @@ export function SimulatorApp() {
       baseSettings: scene.baseSettings,
       sceneId: scene.id,
     };
-  }, [assets, scene, camera.settings]);
+  }, [currentAssets, scene, camera.settings]);
 
   const processed = useProcessedFrame(pipelineInput, isInteracting);
   const assessment = useMemo(() => assessSettings({ settings: camera.settings, scene }), [camera.settings, scene]);
@@ -99,8 +106,8 @@ export function SimulatorApp() {
       <div className="simulator-app__stage">
         {assets.status === "error" && <p role="alert">Couldn't load this scene's images: {assets.error.message}</p>}
         <ComparisonSlider
-          original={assets.status === "ready" ? assets.assets.source : null}
-          simulated={processed.image ?? (assets.status === "ready" ? assets.assets.source : null)}
+          original={currentAssets?.source ?? null}
+          simulated={processed.image ?? currentAssets?.source ?? null}
           isProcessing={assets.status === "loading" || processed.isProcessing}
           label={scene.title}
         />
