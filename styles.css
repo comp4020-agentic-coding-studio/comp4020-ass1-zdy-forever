@@ -1176,6 +1176,14 @@ canvas {
   animation: success-overlay-in 300ms ease-out both;
 }
 
+.success-overlay[data-state="leaving"] {
+  animation: success-overlay-out 400ms cubic-bezier(.4, 0, 1, 1) both;
+}
+
+.success-overlay[data-state="leaving"] .success-overlay__message {
+  animation: success-message-out 400ms cubic-bezier(.4, 0, 1, 1) both;
+}
+
 .success-overlay__message {
   position: relative;
   z-index: 2;
@@ -1400,10 +1408,24 @@ canvas {
   }
 }
 
+@keyframes success-overlay-out {
+  to {
+    opacity: 0;
+    backdrop-filter: blur(0);
+  }
+}
+
 @keyframes success-message-in {
   from {
     opacity: 0;
     transform: translateY(1.5rem) scale(.9);
+  }
+}
+
+@keyframes success-message-out {
+  to {
+    opacity: 0;
+    transform: translateY(-.75rem) scale(.94);
   }
 }
 

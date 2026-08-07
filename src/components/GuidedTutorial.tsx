@@ -91,12 +91,6 @@ export function GuidedTutorial({
     onLessonComplete?.();
   }, [completedDuringVisit, isPreviouslyComplete, meetsCompletionRequirements, onLessonComplete]);
 
-  useEffect(() => {
-    if (!showCelebration) return;
-    const timer = window.setTimeout(() => setShowCelebration(false), 1800);
-    return () => window.clearTimeout(timer);
-  }, [showCelebration]);
-
   function markTouched(key: SettingKey) {
     if (!lesson.enabledSettings.includes(key)) return;
     setTouchedKeys((previous) => (previous.has(key) ? previous : new Set(previous).add(key)));
@@ -136,6 +130,7 @@ export function GuidedTutorial({
               <SuccessOverlay
                 title="Lesson complete!"
                 message={lessonIndex === TUTORIALS.length - 1 ? "The challenges are ready." : "The next lesson is ready."}
+                onDismiss={() => setShowCelebration(false)}
               />
             )}
             {lessonComplete && !showCelebration && (
