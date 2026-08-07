@@ -564,6 +564,231 @@ legend {
   animation: answer-reveal 220ms ease-out both;
 }
 
+.tutorial-concept {
+  position: relative;
+  width: min(100%, 34rem);
+  margin: 1rem 0 0;
+  overflow: hidden;
+  border: 1px solid rgb(255 255 255 / 10%);
+  border-radius: 1.25rem;
+  background:
+    radial-gradient(circle at 50% 40%, rgb(41 151 255 / 14%), transparent 52%),
+    rgb(255 255 255 / 3%);
+}
+
+.tutorial-concept::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(115deg, transparent 25%, rgb(255 255 255 / 5%) 50%, transparent 75%);
+  transform: translateX(-100%);
+  animation: concept-sheen 5s ease-in-out infinite;
+}
+
+.tutorial-concept svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.tutorial-concept text {
+  fill: var(--ink-faint);
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: .08em;
+}
+
+.tutorial-concept__flow,
+.tutorial-concept__rays path,
+.tutorial-concept__focused-rays path,
+.tutorial-concept__trail path,
+.tutorial-concept__energy,
+.tutorial-concept__beam,
+.tutorial-concept__triangle {
+  fill: none;
+  stroke: rgb(136 202 255 / 72%);
+  stroke-linecap: round;
+  stroke-width: 2;
+}
+
+.tutorial-concept__photons circle,
+.tutorial-concept__balance-light {
+  fill: #8ed0ff;
+  filter: drop-shadow(0 0 6px rgb(41 151 255 / 85%));
+}
+
+.tutorial-concept__photons circle {
+  animation: photon-flow 2.2s ease-in-out infinite;
+}
+
+.tutorial-concept__photons circle:nth-child(2) { animation-delay: -.35s; }
+.tutorial-concept__photons circle:nth-child(3) { animation-delay: -.7s; }
+.tutorial-concept__photons circle:nth-child(4) { animation-delay: -1.05s; }
+.tutorial-concept__photons circle:nth-child(5) { animation-delay: -1.4s; }
+
+.tutorial-concept__flow,
+.tutorial-concept__energy {
+  stroke-dasharray: 5 7;
+  animation: energy-flow 1.8s linear infinite;
+}
+
+.tutorial-concept__sensor,
+.tutorial-concept__frame {
+  fill: rgb(8 17 31 / 82%);
+  stroke: rgb(255 255 255 / 22%);
+  stroke-width: 2;
+}
+
+.tutorial-concept__signal {
+  fill: var(--accent);
+  filter: drop-shadow(0 0 5px rgb(41 151 255 / 45%));
+  transition: height 260ms ease, y 260ms ease;
+}
+
+.tutorial-concept__noise circle {
+  fill: #ff9f6e;
+  animation: noise-twinkle 900ms steps(2, end) infinite;
+}
+
+.tutorial-concept__noise circle:nth-child(2n) { animation-delay: -.35s; }
+.tutorial-concept__noise circle:nth-child(3n) { animation-delay: -.65s; }
+
+.tutorial-concept__lens {
+  fill: rgb(8 17 31 / 84%);
+  stroke: rgb(136 202 255 / 58%);
+  stroke-width: 12;
+}
+
+.tutorial-concept__iris {
+  fill: rgb(41 151 255 / 20%);
+  stroke: #8ed0ff;
+  stroke-width: 3;
+  filter: drop-shadow(0 0 10px rgb(41 151 255 / 55%));
+  transition: r 320ms cubic-bezier(.2, .8, .2, 1);
+}
+
+.tutorial-concept__rays,
+.tutorial-concept__focused-rays {
+  animation: light-pulse 2.4s ease-in-out infinite;
+}
+
+.tutorial-concept__curtain {
+  fill: rgb(8 9 13 / 94%);
+  transition: width 280ms ease, x 280ms ease;
+}
+
+.tutorial-concept__runner {
+  fill: #8ed0ff;
+  stroke: #8ed0ff;
+  stroke-linecap: round;
+  stroke-width: 5;
+  transform-box: fill-box;
+  transform-origin: center;
+  transition: transform 280ms ease;
+  animation: runner-bob 700ms ease-in-out infinite alternate;
+}
+
+.tutorial-concept__trail {
+  transition: opacity 280ms ease;
+}
+
+.tutorial-concept__trail path {
+  stroke-dasharray: 4 6;
+  animation: trail-move 900ms linear infinite;
+}
+
+.tutorial-concept__beam {
+  stroke: rgb(255 255 255 / 48%);
+  stroke-width: 4;
+  animation: balance-breathe 2.6s ease-in-out infinite;
+}
+
+.tutorial-concept__pivot {
+  fill: rgb(41 151 255 / 18%);
+  stroke: rgb(136 202 255 / 55%);
+}
+
+.tutorial-concept__dial circle {
+  fill: rgb(8 17 31 / 85%);
+  stroke: rgb(136 202 255 / 62%);
+  stroke-width: 3;
+}
+
+.tutorial-concept__dial path {
+  stroke: white;
+  stroke-linecap: round;
+  stroke-width: 3;
+}
+
+.tutorial-concept__dial text,
+.tutorial-concept__node text {
+  fill: white;
+  font-size: 9px;
+  text-anchor: middle;
+}
+
+.tutorial-concept__balance-light {
+  transition: cx 280ms ease;
+  animation: balance-light 1.8s ease-in-out infinite;
+}
+
+.tutorial-concept__triangle {
+  stroke: rgb(255 255 255 / 24%);
+  stroke-width: 2;
+}
+
+.tutorial-concept__node circle {
+  fill: rgb(41 151 255 / 20%);
+  stroke: #8ed0ff;
+  stroke-width: 2;
+  transition: r 280ms ease;
+}
+
+.tutorial-concept__node--aperture circle { stroke: #bf8cff; }
+.tutorial-concept__node--shutter circle { stroke: #62e6b2; }
+
+.tutorial-concept__exposure {
+  fill: rgb(255 255 255 / 10%);
+  stroke: white;
+  stroke-width: 2;
+  animation: exposure-pulse 2s ease-in-out infinite;
+}
+
+@keyframes concept-sheen {
+  0%, 65% { transform: translateX(-100%); }
+  90%, 100% { transform: translateX(100%); }
+}
+
+@keyframes photon-flow {
+  50% {
+    opacity: .35;
+    transform: translateX(10px) scale(.75);
+  }
+}
+
+@keyframes energy-flow { to { stroke-dashoffset: -24; } }
+
+@keyframes noise-twinkle { 50% { opacity: .18; } }
+
+@keyframes light-pulse { 50% { opacity: .42; } }
+
+@keyframes runner-bob { to { translate: 0 -2px; } }
+
+@keyframes trail-move { to { stroke-dashoffset: -20; } }
+
+@keyframes balance-breathe { 50% { opacity: .58; } }
+
+@keyframes balance-light { 50% { filter: drop-shadow(0 0 12px rgb(41 151 255)); } }
+
+@keyframes exposure-pulse {
+  50% {
+    opacity: .65;
+    transform: scale(.88);
+    transform-origin: 180px 86px;
+  }
+}
+
 .camera-workbench {
   display: grid;
   gap: 1rem;
@@ -1515,6 +1740,7 @@ canvas {
     grid-template-columns: 1.15fr 1fr;
     grid-template-areas:
       "eyebrow purpose"
+      "title concept"
       "title goal"
       "title details";
     gap: .8rem 3rem;
@@ -1532,6 +1758,11 @@ canvas {
 
   .tutorial__header .tutorial__purpose {
     grid-area: purpose;
+    margin-top: 0;
+  }
+
+  .tutorial__header .tutorial-concept {
+    grid-area: concept;
     margin-top: 0;
   }
 

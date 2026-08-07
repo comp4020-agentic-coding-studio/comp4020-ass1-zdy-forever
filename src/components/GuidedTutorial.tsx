@@ -15,6 +15,7 @@ import { AnswerCard } from "./AnswerCard";
 import { ExposureTriangleDiagram } from "./ExposureTriangleDiagram";
 import { IndicatorBadges } from "./IndicatorBadges";
 import { SuccessOverlay } from "./SuccessOverlay";
+import { TutorialConceptAnimation } from "./TutorialConceptAnimation";
 
 export type GuidedTutorialProps = {
   lesson: TutorialDefinition;
@@ -110,6 +111,7 @@ export function GuidedTutorial({
         <p className="tutorial__eyebrow">{lesson.stepLabel}</p>
         <h2 id="tutorial-heading">{lesson.lessonTitle}</h2>
         <p className="tutorial__purpose">{lesson.purpose}</p>
+        <TutorialConceptAnimation lessonId={lesson.id} settings={camera.settings} />
         <p className="tutorial__goal"><strong>Your task:</strong> {lesson.goal}</p>
         <details className="tutorial__details">
           <summary>Why this matters</summary>
