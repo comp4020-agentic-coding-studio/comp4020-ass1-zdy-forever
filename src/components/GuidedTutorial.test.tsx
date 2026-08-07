@@ -29,6 +29,18 @@ describe("GuidedTutorial", () => {
     expect(screen.getByRole("button", { name: "Continue to next lesson →" })).toBeDisabled();
   });
 
+  it("keeps the detailed trade-off in an optional disclosure", async () => {
+    const user = userEvent.setup();
+    render(<GuidedTutorial lesson={TUTORIALS[0]} lessonIndex={0} onContinue={vi.fn()} />);
+    const summary = screen.getByText("Why this matters");
+    const details = summary.closest("details");
+
+    expect(details).not.toHaveAttribute("open");
+    await user.click(summary);
+    expect(details).toHaveAttribute("open");
+    expect(screen.getByText(/Higher ISO reveals the scene/)).toBeInTheDocument();
+  });
+
   it("unlocks continue after the available control is used to balance exposure", async () => {
     const user = userEvent.setup();
     const onContinue = vi.fn();

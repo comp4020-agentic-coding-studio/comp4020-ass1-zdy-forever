@@ -442,11 +442,6 @@ legend {
   font-size: clamp(1.05rem, 1.8vw, 1.3rem);
 }
 
-.tutorial__tradeoff,
-.tutorial__goal {
-  color: var(--ink-soft);
-}
-
 .tutorial__goal {
   width: fit-content;
   margin-top: 1rem !important;
@@ -455,6 +450,44 @@ legend {
   border-radius: 999px;
   background: var(--accent-soft);
   color: #d7ebff;
+}
+
+.tutorial__details {
+  width: min(100%, 34rem);
+  margin-top: 1rem;
+  border-top: 1px solid var(--line);
+  padding-top: .8rem;
+  color: var(--ink-soft);
+}
+
+.tutorial__details summary {
+  width: fit-content;
+  color: var(--accent-bright);
+  cursor: pointer;
+  font-size: .82rem;
+  font-weight: 650;
+  list-style-position: outside;
+}
+
+.tutorial__details summary:hover {
+  color: #b9dcff;
+}
+
+.tutorial__details summary:focus-visible {
+  border-radius: .25rem;
+  outline: 3px solid var(--accent);
+  outline-offset: 3px;
+}
+
+.tutorial__details[open] summary {
+  margin-bottom: .65rem;
+}
+
+.tutorial__tradeoff {
+  margin: 0 !important;
+  color: var(--ink-soft);
+  font-size: .9rem;
+  animation: answer-reveal 220ms ease-out both;
 }
 
 .camera-workbench {
@@ -1476,24 +1509,36 @@ canvas {
   .tutorial__header {
     display: grid;
     grid-template-columns: 1.15fr 1fr;
-    gap: 0 3rem;
-    align-items: end;
+    grid-template-areas:
+      "eyebrow purpose"
+      "title goal"
+      "title details";
+    gap: .8rem 3rem;
+    align-items: start;
   }
 
-  .tutorial__header .tutorial__eyebrow,
+  .tutorial__header .tutorial__eyebrow {
+    grid-area: eyebrow;
+  }
+
   .tutorial__header h2 {
-    grid-column: 1;
-  }
-
-  .tutorial__header .tutorial__purpose,
-  .tutorial__header .tutorial__tradeoff,
-  .tutorial__header .tutorial__goal {
-    grid-column: 2;
+    grid-area: title;
+    margin-bottom: 0;
   }
 
   .tutorial__header .tutorial__purpose {
-    grid-row: 1 / span 2;
-    align-self: end;
+    grid-area: purpose;
+    margin-top: 0;
+  }
+
+  .tutorial__header .tutorial__goal {
+    grid-area: goal;
+    margin-top: 0 !important;
+  }
+
+  .tutorial__header .tutorial__details {
+    grid-area: details;
+    margin-top: 0;
   }
 
   .camera-workbench {

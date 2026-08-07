@@ -111,8 +111,11 @@ export function GuidedTutorial({
         <p className="tutorial__eyebrow">{lesson.stepLabel}</p>
         <h2 id="tutorial-heading">{lesson.lessonTitle}</h2>
         <p className="tutorial__purpose">{lesson.purpose}</p>
-        <p className="tutorial__tradeoff"><strong>The cost:</strong> {lesson.tradeoff}</p>
         <p className="tutorial__goal"><strong>Your task:</strong> {lesson.goal}</p>
+        <details className="tutorial__details">
+          <summary>Why this matters</summary>
+          <p className="tutorial__tradeoff"><strong>The trade-off:</strong> {lesson.tradeoff}</p>
+        </details>
       </header>
 
       <div className="camera-workbench">
