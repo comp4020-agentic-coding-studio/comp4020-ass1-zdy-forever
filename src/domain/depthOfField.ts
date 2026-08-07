@@ -4,7 +4,7 @@ import type { DepthOfFieldLevel } from "./types";
 // Discrete blur pyramid the processing pipeline precomputes and caches —
 // selection below picks an index into this table rather than blurring at an
 // arbitrary continuous radius, so results are cacheable per scene.
-export const BLUR_LEVELS_PX = [0, 2, 4, 8, 12, 18, 26] as const;
+export const BLUR_LEVELS_PX = [0, 5] as const;
 
 // How many stops wider than the scene's base aperture we are. Positive means
 // a wider opening (smaller f-number) than base, i.e. shallower depth of
@@ -23,7 +23,7 @@ export function blurStrength(wideningStops: number): number {
 // full theoretical strength on top of that double-blurs the background, so
 // the pixel pipeline adds only the extra blur introduced by the wider setting.
 export function incrementalBlurStrength(wideningStops: number): number {
-  return blurStrength(wideningStops) * 0.45;
+  return blurStrength(wideningStops) * 0.7;
 }
 
 // Picks an index into BLUR_LEVELS_PX for a pixel `depthDistance` (0 = at the

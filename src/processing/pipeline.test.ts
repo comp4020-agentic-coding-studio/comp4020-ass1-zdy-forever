@@ -219,6 +219,25 @@ describe("applyDepthOfFieldStage", () => {
     expect(variance(backgroundPixels)).toBeLessThan(variance(subjectPixels));
   });
 
+  it("lets a refined subject mask protect the foreground when a depth map is also present", () => {
+    const image = checkerboard(16, 16);
+    const depthMap = grayscaleMask(16, 16, () => 1);
+    const subjectMask = grayscaleMask(16, 16, (x) => (x < 8 ? 1 : 0));
+    const result = applyDepthOfFieldStage(image, {
+      depthMap,
+      subjectMask,
+      focusDepth: 0,
+      wideningStops: 4,
+    });
+
+    for (let y = 0; y < 16; y++) {
+      for (let x = 0; x < 8; x++) {
+        const offset = (y * 16 + x) * 4;
+        expect(result.data[offset]).toBe(image.data[offset]);
+      }
+    }
+  });
+
   it("keeps every output channel within [0, 255]", () => {
     const image = checkerboard(12, 12);
     const depthMap = grayscaleMask(12, 12, (x, y) => (x + y) / 24);

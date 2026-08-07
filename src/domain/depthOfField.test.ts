@@ -42,7 +42,7 @@ describe("blurStrength", () => {
 describe("incrementalBlurStrength", () => {
   it("adds only residual blur on top of a source photo's existing depth of field", () => {
     expect(incrementalBlurStrength(3)).toBeLessThan(blurStrength(3));
-    expect(incrementalBlurStrength(4)).toBeCloseTo(0.45, 5);
+    expect(incrementalBlurStrength(4)).toBeCloseTo(0.7, 5);
   });
 });
 

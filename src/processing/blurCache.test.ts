@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it } from "vitest";
+import { BLUR_LEVELS_PX } from "../domain/depthOfField";
 import type { PixelImage } from "../domain/types";
 import { clearBlurCache, getBlurPyramid } from "./blurCache";
 
@@ -24,7 +25,7 @@ describe("getBlurPyramid", () => {
 
   it("returns one image per blur level", () => {
     const pyramid = getBlurPyramid("test-scene", checkerboard(8, 8));
-    expect(pyramid).toHaveLength(7);
+    expect(pyramid).toHaveLength(BLUR_LEVELS_PX.length);
     expect(pyramid[0].width).toBe(8);
   });
 

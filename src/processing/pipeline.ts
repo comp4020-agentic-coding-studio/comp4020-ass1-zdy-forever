@@ -60,9 +60,12 @@ export function applyDepthOfFieldStage(image: PixelImage, input: DepthOfFieldInp
 
   for (let y = 0; y < height; y++) {
     for (let x = 0; x < width; x++) {
-      const depthDistance = input.depthMap
+      let depthDistance = input.depthMap
         ? depthDistanceFromFocus(readMaskValue(input.depthMap, x, y), input.focusDepth)
         : 1 - readMaskValue(input.subjectMask as PixelImage, x, y);
+      if (input.subjectMask) {
+        depthDistance *= 1 - readMaskValue(input.subjectMask, x, y);
+      }
 
       const levelPosition = clamp01(depthDistance) * strength * maxIndex;
       const lowerIndex = Math.floor(levelPosition);
@@ -199,14 +202,16 @@ export function runPipeline(input: PipelineInput): PixelImage {
 
   if (input.depthMap || input.subjectMask) {
     const wideningStops = apertureWideningStops(input.settings.aperture, effectBaseSettings.aperture);
-    const pyramid = getBlurPyramid(input.sceneId, input.source);
-    image = applyDepthOfFieldStage(input.source, {
-      depthMap: input.depthMap,
-      subjectMask: input.subjectMask,
-      focusDepth: input.focusDepth ?? 0.5,
-      wideningStops,
-      pyramid,
-    });
+    if (wideningStops > 0) {
+      const pyramid = getBlurPyramid(input.sceneId, input.source);
+      image = applyDepthOfFieldStage(input.source, {
+        depthMap: input.depthMap,
+        subjectMask: input.subjectMask,
+        focusDepth: input.focusDepth ?? 0.5,
+        wideningStops,
+        pyramid,
+      });
+    }
   }
 
   const stops = calculateStops(input.settings, input.baseSettings);
