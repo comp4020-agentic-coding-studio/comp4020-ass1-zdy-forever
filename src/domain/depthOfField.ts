@@ -19,6 +19,13 @@ export function blurStrength(wideningStops: number): number {
   return clamp01(Math.max(0, wideningStops) / 4);
 }
 
+// Source photographs already contain optical depth of field. Rendering the
+// full theoretical strength on top of that double-blurs the background, so
+// the pixel pipeline adds only the extra blur introduced by the wider setting.
+export function incrementalBlurStrength(wideningStops: number): number {
+  return blurStrength(wideningStops) * 0.45;
+}
+
 // Picks an index into BLUR_LEVELS_PX for a pixel `depthDistance` (0 = at the
 // focus plane, 1 = as far as the scene's depth map goes) away from focus,
 // scaled by the overall `strength`.

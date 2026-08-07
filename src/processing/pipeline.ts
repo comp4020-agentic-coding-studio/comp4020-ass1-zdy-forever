@@ -1,5 +1,5 @@
 import { applyExposureToLinear, calculateStops, clamp01, linearToSrgb, srgbToLinear } from "../domain/exposure";
-import { apertureWideningStops, blurStrength, BLUR_LEVELS_PX, depthDistanceFromFocus } from "../domain/depthOfField";
+import { apertureWideningStops, incrementalBlurStrength, BLUR_LEVELS_PX, depthDistanceFromFocus } from "../domain/depthOfField";
 import { applyNoise, hashSeed, noiseStopsAboveBase, noiseStrength } from "../domain/noise";
 import { motionBlurKernelLength, shutterSlownessStops, subjectMotionBlurStrength } from "../domain/motion";
 import type { CameraSettings } from "../domain/types";
@@ -48,7 +48,7 @@ export type DepthOfFieldInput = {
 // falls back to a binary subject mask (subject stays sharp, everything else
 // blurs) when that's all the scene provides.
 export function applyDepthOfFieldStage(image: PixelImage, input: DepthOfFieldInput): PixelImage {
-  const strength = blurStrength(input.wideningStops);
+  const strength = incrementalBlurStrength(input.wideningStops);
   if (strength <= 0 || (!input.depthMap && !input.subjectMask)) {
     return copyImage(image);
   }

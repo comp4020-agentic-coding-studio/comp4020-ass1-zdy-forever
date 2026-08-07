@@ -5,6 +5,7 @@ import {
   blurStrength,
   classifyDepthOfField,
   depthDistanceFromFocus,
+  incrementalBlurStrength,
   selectBlurLevelIndex,
   selectBlurPx,
 } from "./depthOfField";
@@ -35,6 +36,13 @@ describe("blurStrength", () => {
 
   it("increases monotonically with widening stops", () => {
     expect(blurStrength(1)).toBeLessThan(blurStrength(3));
+  });
+});
+
+describe("incrementalBlurStrength", () => {
+  it("adds only residual blur on top of a source photo's existing depth of field", () => {
+    expect(incrementalBlurStrength(3)).toBeLessThan(blurStrength(3));
+    expect(incrementalBlurStrength(4)).toBeCloseTo(0.45, 5);
   });
 });
 
