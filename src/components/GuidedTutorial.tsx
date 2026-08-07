@@ -24,6 +24,9 @@ export type GuidedTutorialProps = {
   onLessonComplete?: () => void;
   onContinue: () => void;
   onBack?: () => void;
+  completedLessonIds?: ReadonlySet<string>;
+  navigableLessonIds?: ReadonlySet<string>;
+  onNavigate?: (lessonIndex: number) => void;
 };
 
 function relevantMessageIndexes(enabledSettings: readonly SettingKey[]): number[] {
@@ -49,6 +52,9 @@ export function GuidedTutorial({
   onLessonComplete,
   onContinue,
   onBack,
+  completedLessonIds,
+  navigableLessonIds,
+  onNavigate,
 }: GuidedTutorialProps) {
   const assets = useSceneAssets(lesson);
   const camera = useCameraSettings(lesson.id, lesson.initialSettings, lesson.initialSettings);
@@ -99,12 +105,26 @@ export function GuidedTutorial({
   return (
     <section className="tutorial" aria-labelledby="tutorial-heading">
       <ol className="tutorial__progress" aria-label="Tutorial progress">
-        {TUTORIALS.map((item, index) => (
-          <li key={item.id} data-state={index < lessonIndex ? "complete" : index === lessonIndex ? "current" : "locked"}>
-            <span>{index < lessonIndex || (index === lessonIndex && lessonComplete) ? "✓" : index + 1}</span>
-            {item.title}
-          </li>
-        ))}
+        {TUTORIALS.map((item, index) => {
+          const isComplete = completedLessonIds?.has(item.id) ?? (index < lessonIndex || (index === lessonIndex && lessonComplete));
+          const isCurrent = index === lessonIndex;
+          const isNavigable = Boolean(onNavigate && ((navigableLessonIds?.has(item.id) ?? isComplete) || isCurrent));
+          const state = isCurrent ? "current" : isComplete ? "complete" : isNavigable ? "available" : "locked";
+          return (
+            <li key={item.id} data-state={state}>
+              <button
+                type="button"
+                disabled={!isNavigable || isCurrent}
+                aria-current={isCurrent ? "step" : undefined}
+                aria-label={`${item.title}${isCurrent ? ` — current lesson${isComplete ? ", completed" : ""}` : isComplete ? " — completed" : isNavigable ? " — available" : " — locked"}`}
+                onClick={() => onNavigate?.(index)}
+              >
+                <span>{isComplete ? "✓" : index + 1}</span>
+                {item.title}
+              </button>
+            </li>
+          );
+        })}
       </ol>
 
       <header className="tutorial__header">

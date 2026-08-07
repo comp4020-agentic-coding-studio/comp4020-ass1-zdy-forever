@@ -40,6 +40,9 @@ export function App() {
     !hasCompletedTutorials() && loadCompletedLessonIds().size === 0,
   );
   const tutorialsComplete = lessonIndex >= TUTORIALS.length;
+  const nextIncompleteIndex = firstIncompleteLessonIndex(completedLessonIds);
+  const navigableLessonIds = new Set(completedLessonIds);
+  if (nextIncompleteIndex < TUTORIALS.length) navigableLessonIds.add(TUTORIALS[nextIncompleteIndex].id);
 
   useEffect(() => {
     if (tutorialsComplete) return;
@@ -84,15 +87,8 @@ export function App() {
   }
 
   function reviewTutorials() {
-    try {
-      window.localStorage.removeItem(TUTORIAL_STORAGE_KEY);
-      window.localStorage.removeItem(LESSON_PROGRESS_STORAGE_KEY);
-    } catch {
-      // The in-memory state still allows review when storage is unavailable.
-    }
     setLessonIndex(0);
-    setCompletedLessonIds(new Set());
-    setShowIntroduction(true);
+    setShowIntroduction(false);
   }
 
   return (
@@ -120,6 +116,9 @@ export function App() {
           onLessonComplete={() => recordLessonComplete(TUTORIALS[lessonIndex].id)}
           onContinue={continueTutorial}
           onBack={lessonIndex > 0 ? () => setLessonIndex((current) => current - 1) : undefined}
+          completedLessonIds={completedLessonIds}
+          navigableLessonIds={navigableLessonIds}
+          onNavigate={setLessonIndex}
         />
       )}
     </>

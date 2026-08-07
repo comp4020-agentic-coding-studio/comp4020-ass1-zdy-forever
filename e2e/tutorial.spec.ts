@@ -35,6 +35,15 @@ test("the guided path progresses from one dial to all three before unlocking cha
 
   await expect(page.getByRole("heading", { name: "The challenges are unlocked" })).toBeVisible();
   await expect(page.getByRole("radio", { name: /^Portrait/ })).toBeVisible();
+
+  await page.getByRole("button", { name: "Review tutorials" }).click();
+  await expect(page.getByRole("heading", { name: "ISO amplifies the signal" })).toBeVisible();
+  await page.getByRole("button", { name: "The exposure triangle — completed" }).click();
+  await expect(page.getByRole("heading", { name: "Now balance all three costs" })).toBeVisible();
+  await page.getByRole("button", { name: "ISO — completed" }).click();
+  await expect(page.getByRole("heading", { name: "ISO amplifies the signal" })).toBeVisible();
+  await page.getByRole("button", { name: "ISO + shutter — completed" }).click();
+  await expect(page.getByRole("heading", { name: "Two controls can pay the same light bill" })).toBeVisible();
 });
 
 test("the desktop workbench keeps the photograph, controls and triangle together", async ({ page }) => {

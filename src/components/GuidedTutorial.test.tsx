@@ -87,6 +87,29 @@ describe("GuidedTutorial", () => {
     expect(screen.getByRole("button", { name: "Continue to next lesson →" })).toBeEnabled();
   });
 
+  it("navigates directly between completed lessons while locked lessons stay unavailable", async () => {
+    const user = userEvent.setup();
+    const onNavigate = vi.fn();
+    const completed = new Set([TUTORIALS[0].id, TUTORIALS[1].id]);
+    const navigable = new Set([...completed, TUTORIALS[2].id]);
+    render(
+      <GuidedTutorial
+        lesson={TUTORIALS[0]}
+        lessonIndex={0}
+        isPreviouslyComplete
+        completedLessonIds={completed}
+        navigableLessonIds={navigable}
+        onNavigate={onNavigate}
+        onContinue={vi.fn()}
+      />,
+    );
+
+    await user.click(screen.getByRole("button", { name: "Aperture — completed" }));
+    expect(onNavigate).toHaveBeenCalledWith(1);
+    expect(screen.getByRole("button", { name: "Shutter speed — available" })).toBeEnabled();
+    expect(screen.getByRole("button", { name: "ISO + shutter — locked" })).toBeDisabled();
+  });
+
   it("reveals and applies the lesson's standard answer", async () => {
     const user = userEvent.setup();
     render(<GuidedTutorial lesson={TUTORIALS[0]} lessonIndex={0} onContinue={vi.fn()} />);

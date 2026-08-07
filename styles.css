@@ -429,11 +429,7 @@ legend {
 
 .tutorial__progress li {
   position: relative;
-  display: flex;
-  align-items: center;
-  gap: .5rem;
   min-width: 0;
-  padding: .8rem .7rem;
   overflow: hidden;
   border: 1px solid var(--line);
   border-radius: 999px;
@@ -442,15 +438,53 @@ legend {
   white-space: nowrap;
 }
 
+.tutorial__progress button {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  width: 100%;
+  min-height: 3rem;
+  padding: .55rem .7rem;
+  overflow: hidden;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tutorial__progress button:not(:disabled) {
+  cursor: pointer;
+}
+
+.tutorial__progress button:disabled {
+  opacity: 1;
+}
+
+.tutorial__progress button:focus-visible {
+  border-radius: inherit;
+  outline: 3px solid var(--accent);
+  outline-offset: -3px;
+}
+
+.tutorial__progress li[data-state="complete"]:has(button:not(:disabled)):hover {
+  border-color: rgb(48 209 88 / 50%);
+  background: rgb(48 209 88 / 7%);
+}
+
 .tutorial__progress li::before {
   content: "";
   position: absolute;
   inset: 0;
   background: linear-gradient(90deg, transparent, rgb(255 255 255 / 6%), transparent);
   transform: translateX(-110%);
+  pointer-events: none;
 }
 
-.tutorial__progress li span {
+.tutorial__progress li button span {
   display: grid;
   place-items: center;
   flex: 0 0 1.5rem;
@@ -472,7 +506,7 @@ legend {
   animation: progress-shine 3.5s ease-in-out infinite;
 }
 
-.tutorial__progress li[data-state="current"] span {
+.tutorial__progress li[data-state="current"] button span {
   background: var(--accent);
   color: white;
 }
@@ -481,7 +515,17 @@ legend {
   color: var(--ink-soft);
 }
 
-.tutorial__progress li[data-state="complete"] span {
+.tutorial__progress li[data-state="available"] {
+  border-color: rgb(41 151 255 / 25%);
+  color: var(--ink-soft);
+}
+
+.tutorial__progress li[data-state="available"]:hover {
+  border-color: rgb(41 151 255 / 52%);
+  background: var(--accent-soft);
+}
+
+.tutorial__progress li[data-state="complete"] button span {
   background: var(--success);
   color: #001807;
 }
@@ -1956,6 +2000,8 @@ canvas {
       "title details";
     gap: .8rem 3rem;
     align-items: start;
+    padding-top: 1rem;
+    padding-bottom: .25rem;
   }
 
   .tutorial__header .tutorial__eyebrow {
@@ -1974,7 +2020,69 @@ canvas {
 
   .tutorial__header .tutorial-concept {
     grid-area: concept;
+    display: grid;
+    grid-template-columns: minmax(9rem, .8fr) minmax(0, 1.45fr);
+    grid-template-areas:
+      "heading example"
+      "current current";
     margin-top: 0;
+  }
+
+  .tutorial-concept__heading {
+    grid-area: heading;
+    justify-content: center;
+    border-right: 1px solid var(--line);
+    border-bottom: 0;
+    padding: .7rem;
+  }
+
+  .concept-before-after,
+  .concept-equation,
+  .concept-three {
+    grid-area: example;
+  }
+
+  .concept-before-after {
+    padding: .55rem .7rem;
+  }
+
+  .concept-scene,
+  .concept-motion {
+    height: 3.65rem;
+  }
+
+  .concept-lens {
+    width: 3.8rem;
+    height: 3.8rem;
+  }
+
+  .concept-lens--wide i {
+    width: 2.1rem;
+    height: 2.1rem;
+  }
+
+  .concept-equation {
+    gap: .25rem;
+    padding: .55rem;
+  }
+
+  .concept-equation > div {
+    min-height: 4.8rem;
+    padding: .35rem;
+  }
+
+  .concept-three {
+    gap: .3rem;
+    padding: .55rem .55rem 3.25rem;
+  }
+
+  .concept-three > div:not(.concept-three__result) {
+    padding: .4rem .25rem;
+  }
+
+  .concept-current {
+    grid-area: current;
+    padding-block: .48rem;
   }
 
   .tutorial__header .tutorial__goal {
