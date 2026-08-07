@@ -17,6 +17,16 @@ export const SHUTTER_VALUES = [
 
 export type SettingKey = "iso" | "aperture" | "shutterSeconds";
 
+// Every scene starts here, not at its own baseline — a fresh scene's
+// baseline is by definition zero stops from itself, which would count as a
+// "balanced" exposure with no input from the player. Starting at the floor
+// of every table forces an actual adjustment before a level can clear.
+export const MINIMUM_SETTINGS: CameraSettings = {
+  iso: ISO_VALUES[0],
+  aperture: APERTURE_VALUES[0],
+  shutterSeconds: SHUTTER_VALUES[0],
+};
+
 const VALUE_TABLES: Record<SettingKey, readonly number[]> = {
   iso: ISO_VALUES,
   aperture: APERTURE_VALUES,

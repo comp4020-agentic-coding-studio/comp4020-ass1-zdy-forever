@@ -38,21 +38,28 @@ async function waitForFrame() {
 }
 
 describe("SimulatorApp", () => {
-  it("renders all four scenes and the default scene's settings", async () => {
+  it("renders all four scenes and starts every scene unbalanced at the shared minimum", async () => {
     render(<SimulatorApp />);
     await waitForFrame();
     expect(screen.getAllByRole("radio")).toHaveLength(4);
-    expect(screen.getByText("ISO 200")).toBeInTheDocument(); // portrait's base ISO
+    expect(screen.getByText("ISO 100")).toBeInTheDocument(); // table floor, not portrait's base ISO 200
   });
 
-  it("switching scenes resets the settings to the new scene's baseline", async () => {
+  it("switching to a newly-unlocked scene resets settings to the shared minimum, not that scene's own baseline", async () => {
     const user = userEvent.setup();
     render(<SimulatorApp />);
     await waitForFrame();
 
-    await user.click(screen.getByRole("radio", { name: /Landscape/ }));
+    // Two ISO increases from the minimum (100 -> 200 -> 400) lands portrait's
+    // exposure within the balanced band, which clears it and unlocks Motion.
+    await user.click(screen.getByRole("button", { name: "Increase ISO" }));
     await waitForFrame();
-    expect(screen.getByText("ISO 100")).toBeInTheDocument(); // landscape's base ISO
+    await user.click(screen.getByRole("button", { name: "Increase ISO" }));
+    await waitForFrame();
+
+    await user.click(screen.getByRole("radio", { name: /^Moving subject/ }));
+    await waitForFrame();
+    expect(screen.getByText("ISO 100")).toBeInTheDocument(); // shared minimum, not motion's own base ISO 400
   });
 
   it("stepping a control updates the explanation panel", async () => {
@@ -60,6 +67,8 @@ describe("SimulatorApp", () => {
     render(<SimulatorApp />);
     await waitForFrame();
 
+    await user.click(screen.getByRole("button", { name: "Increase ISO" }));
+    await waitForFrame();
     await user.click(screen.getByRole("button", { name: "Increase ISO" }));
     await waitForFrame();
     expect(screen.getByText(/Raising ISO to ISO 400/)).toBeInTheDocument();
@@ -99,11 +108,13 @@ describe("SimulatorApp", () => {
 
     await user.click(screen.getByRole("button", { name: "Increase ISO" }));
     await waitForFrame();
+    await user.click(screen.getByRole("button", { name: "Increase ISO" }));
+    await waitForFrame();
     expect(screen.getByText("ISO 400")).toBeInTheDocument();
 
     await user.click(screen.getByRole("button", { name: "Reset to scene defaults" }));
     await waitForFrame();
-    expect(screen.getByText("ISO 200")).toBeInTheDocument();
+    expect(screen.getByText("ISO 200")).toBeInTheDocument(); // portrait's actual baseline, not the shared minimum
   });
 
   it("selecting two saved experiments shows the comparison view", async () => {

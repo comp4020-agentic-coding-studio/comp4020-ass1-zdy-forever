@@ -1,13 +1,15 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { pixelImageToBlob } from "../browser/loadPixelImage";
 import { useSceneAssets } from "../browser/useSceneAssets";
 import { calculateStops } from "../domain/exposure";
 import { assessSettings } from "../domain/explain";
 import { DEFAULT_SCENE_ID, SCENES, getScene } from "../domain/scenes";
+import { MINIMUM_SETTINGS } from "../domain/settings";
 import type { PipelineInput } from "../processing/pipeline";
 import { useProcessedFrame } from "../processing/useProcessedFrame";
 import { ALBUM_CAPACITY, useAlbum } from "../state/useAlbum";
 import { useCameraSettings } from "../state/useCameraSettings";
+import { useLevelProgress } from "../state/useLevelProgress";
 import { AlbumComparisonView } from "./AlbumComparisonView";
 import { AlbumStrip } from "./AlbumStrip";
 import { ComparisonSlider } from "./ComparisonSlider";
@@ -21,7 +23,8 @@ export function SimulatorApp() {
   const [sceneId, setSceneId] = useState(DEFAULT_SCENE_ID);
   const scene = getScene(sceneId) ?? SCENES[0];
   const assets = useSceneAssets(scene);
-  const camera = useCameraSettings(scene.baseSettings);
+  const camera = useCameraSettings(scene.id, MINIMUM_SETTINGS, scene.baseSettings);
+  const levelProgress = useLevelProgress(SCENES);
   const [isInteracting, setIsInteracting] = useState(false);
   const album = useAlbum();
   const [saveStatus, setSaveStatus] = useState<string | null>(null);
@@ -54,6 +57,13 @@ export function SimulatorApp() {
   const processed = useProcessedFrame(pipelineInput, isInteracting);
   const assessment = useMemo(() => assessSettings({ settings: camera.settings, scene }), [camera.settings, scene]);
   const stops = useMemo(() => calculateStops(camera.settings, scene.baseSettings), [camera.settings, scene]);
+
+  // A level clears the instant its settings land on a balanced exposure —
+  // this reads off the assessment (pure settings math), not the processed
+  // frame, so it doesn't wait on the async pipeline or a save.
+  useEffect(() => {
+    if (assessment.exposure === "balanced") levelProgress.markCleared(scene.id);
+  }, [assessment.exposure, scene.id, levelProgress.markCleared]);
 
   async function handleSave() {
     if (!processed.image) return;
@@ -101,7 +111,13 @@ export function SimulatorApp() {
 
   return (
     <div className="simulator-app">
-      <SceneSelector scenes={SCENES} selectedId={scene.id} onSelect={setSceneId} />
+      <SceneSelector
+        scenes={SCENES}
+        selectedId={scene.id}
+        onSelect={setSceneId}
+        isUnlocked={levelProgress.isUnlocked}
+        clearedIds={levelProgress.clearedIds}
+      />
 
       <div className="simulator-app__stage">
         {assets.status === "error" && <p role="alert">Couldn't load this scene's images: {assets.error.message}</p>}

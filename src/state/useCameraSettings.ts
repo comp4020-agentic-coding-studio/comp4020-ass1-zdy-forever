@@ -15,15 +15,25 @@ export type UseCameraSettingsResult = {
 
 // Manages one scene's live camera settings: stepping (used by both button
 // controls and arrow keys), direct set (sliders/selects, snapped onto the
-// allowed value table), and reset back to the scene's base settings.
-// Re-initialises whenever `baseSettings`'s identity changes (i.e. the
-// active scene changed).
-export function useCameraSettings(baseSettings: CameraSettings): UseCameraSettingsResult {
-  const [settings, setSettings] = useState<CameraSettings>(baseSettings);
+// allowed value table), and reset. `initialSettings` is what a fresh mount
+// or a scene switch lands on (deliberately the table floor, not the
+// scene's own baseline — see `MINIMUM_SETTINGS`); `resetSettings` is what
+// the Reset button targets (the scene's actual baseline). Re-initialises to
+// `initialSettings` whenever `sceneId` changes, since `initialSettings`
+// itself is the same constant across every scene and wouldn't otherwise
+// signal a scene switch by its own identity.
+export function useCameraSettings(
+  sceneId: string,
+  initialSettings: CameraSettings,
+  resetSettings: CameraSettings,
+): UseCameraSettingsResult {
+  const [settings, setSettings] = useState<CameraSettings>(initialSettings);
 
   useEffect(() => {
-    setSettings(baseSettings);
-  }, [baseSettings]);
+    setSettings(initialSettings);
+    // Deliberately keyed on sceneId alone — see the function comment above.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sceneId]);
 
   const step = useCallback((key: SettingKey, direction: 1 | -1) => {
     setSettings((current) => ({ ...current, [key]: stepSetting(key, current[key], direction) }));
@@ -34,8 +44,8 @@ export function useCameraSettings(baseSettings: CameraSettings): UseCameraSettin
   }, []);
 
   const reset = useCallback(() => {
-    setSettings(baseSettings);
-  }, [baseSettings]);
+    setSettings(resetSettings);
+  }, [resetSettings]);
 
   const handleKeyDown = useCallback(
     (key: SettingKey, event: KeyboardEvent) => {

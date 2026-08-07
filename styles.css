@@ -255,6 +255,16 @@ legend {
   color: var(--ink-soft);
 }
 
+.scene-selector__badge {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--accent);
+}
+
+.scene-selector__option--locked .scene-selector__description {
+  font-style: italic;
+}
+
 .simulator-app__stage {
   border: 2px solid var(--ink);
   border-radius: var(--radius-torn);
