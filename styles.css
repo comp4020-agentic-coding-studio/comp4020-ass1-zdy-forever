@@ -887,7 +887,7 @@ legend {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: .55rem;
-  padding: .9rem 1rem 4rem;
+  padding: .9rem 1rem 4.4rem;
 }
 
 .concept-three > div:not(.concept-three__result) {
@@ -919,7 +919,7 @@ legend {
 .concept-three > div:not(.concept-three__result)::after {
   content: "↓";
   position: absolute;
-  bottom: 2.6rem;
+  bottom: 3.1rem;
   color: var(--accent-bright);
   font-size: 1.1rem;
   animation: teaching-down 1.3s ease-in-out infinite;
@@ -927,19 +927,25 @@ legend {
 
 .concept-three__result {
   position: absolute;
-  bottom: .7rem;
+  bottom: .6rem;
   left: 50%;
   display: flex;
   align-items: center;
-  gap: .45rem;
+  gap: .6rem;
+  padding: .55rem .9rem;
+  border: 1px solid rgb(48 209 88 / 30%);
+  border-radius: 999px;
+  background: rgb(48 209 88 / 10%);
   color: #a8f0ba;
-  font-size: .78rem;
+  font-size: 1rem;
+  white-space: nowrap;
   translate: -50% 0;
 }
 
 .concept-three__result i {
-  width: .65rem;
-  height: .65rem;
+  flex: 0 0 .85rem;
+  width: .85rem;
+  height: .85rem;
   border-radius: 50%;
   background: #30d158;
   box-shadow: 0 0 12px rgb(48 209 88 / 70%);
@@ -2036,7 +2042,7 @@ canvas {
 
   .concept-three {
     gap: .3rem;
-    padding: .55rem .55rem 3.25rem;
+    padding: .55rem .55rem 3.8rem;
   }
 
   .concept-three > div:not(.concept-three__result) {
