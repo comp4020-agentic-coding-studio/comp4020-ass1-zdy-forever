@@ -57,7 +57,7 @@ describe("SimulatorApp", () => {
     await waitForFrame();
     await user.click(screen.getByRole("button", { name: "Increase ISO" }));
     await waitForFrame();
-    expect(screen.getByText(/Raising ISO to ISO 400/)).toBeInTheDocument();
+    expect(screen.getByText(/ISO 400: brighter/)).toBeInTheDocument();
   });
 
   it("shows an immediate celebration over the photograph when a scene is balanced", async () => {

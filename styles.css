@@ -1025,7 +1025,8 @@ legend {
 
 .camera-workbench__visual,
 .camera-workbench__controls,
-.camera-workbench__triangle {
+.camera-workbench__triangle,
+.tutorial__explanation {
   min-width: 0;
 }
 

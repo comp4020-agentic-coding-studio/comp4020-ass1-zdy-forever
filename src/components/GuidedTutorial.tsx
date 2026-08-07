@@ -174,6 +174,10 @@ export function GuidedTutorial({
             )}
           </div>
           <IndicatorBadges assessment={assessment} visibleKeys={relevantBadges(lesson.enabledSettings)} />
+          <div className="explanation-panel tutorial__explanation" aria-live="polite">
+            <h2>What changed</h2>
+            <ul>{messages.map((message) => <li key={message}>{message}</li>)}</ul>
+          </div>
         </div>
 
         <aside className="camera-workbench__controls" aria-label="Camera controls and exposure triangle">
@@ -217,11 +221,7 @@ export function GuidedTutorial({
             />
           )}
         </aside>
-      </div>
 
-      <div className="explanation-panel tutorial__explanation" aria-live="polite">
-        <h2>What changed</h2>
-        <ul>{messages.map((message) => <li key={message}>{message}</li>)}</ul>
       </div>
 
       <div className="tutorial__completion" data-complete={lessonComplete || undefined}>

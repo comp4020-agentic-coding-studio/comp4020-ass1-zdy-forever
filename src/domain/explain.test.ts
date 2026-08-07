@@ -49,7 +49,7 @@ describe("assessSettings", () => {
   it("keeps stationary scenes free of motion blur at slow shutter speeds", () => {
     const assessment = assessSettings({ settings: { ...scene.baseSettings, shutterSeconds: 1 }, scene });
     expect(assessment.motionBlur).toBe("frozen");
-    expect(assessment.messages).toContainEqual(expect.stringContaining("stationary objects remain sharp"));
+    expect(assessment.messages).toContainEqual(expect.stringContaining("stationary scene stays sharp"));
   });
 
   it("produces exactly four concrete, non-empty explanation messages", () => {

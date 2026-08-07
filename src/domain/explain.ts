@@ -47,22 +47,22 @@ function exposureMessage(
 ): string {
   const rounded = Math.abs(totalStops).toFixed(1);
   if (exposure === "balanced") {
-    return `These settings land close to a balanced exposure for this scene.`;
+    return "Exposure is balanced.";
   }
   if (totalStops > 0) {
-    return `This combination is about ${rounded} stops brighter than this scene's baseline — ${exposureLabel(exposure)}.`;
+    return `${rounded} stops brighter — ${exposureLabel(exposure)}.`;
   }
-  return `This combination is about ${rounded} stops darker than this scene's baseline — ${exposureLabel(exposure)}.`;
+  return `${rounded} stops darker — ${exposureLabel(exposure)}.`;
 }
 
 function isoMessage(settings: CameraSettings, effectBaseSettings: CameraSettings, noise: Assessment["noise"]): string {
   if (settings.iso === effectBaseSettings.iso) {
-    return `${formatIso(settings.iso)} matches this scene's baseline, so it adds no noise on its own.`;
+    return `${formatIso(settings.iso)}: baseline noise.`;
   }
   if (settings.iso > effectBaseSettings.iso) {
-    return `Raising ISO to ${formatIso(settings.iso)} brightens the image but adds ${noise} noise, most visible in the shadows.`;
+    return `${formatIso(settings.iso)}: brighter, with ${noise} noise.`;
   }
-  return `Lowering ISO to ${formatIso(settings.iso)} keeps noise ${noise}, but darkens the image unless another setting compensates.`;
+  return `${formatIso(settings.iso)}: darker, with ${noise} noise.`;
 }
 
 function apertureMessage(
@@ -70,13 +70,14 @@ function apertureMessage(
   effectBaseSettings: CameraSettings,
   depthOfField: Assessment["depthOfField"],
 ): string {
+  const depthLabel = depthOfField.replaceAll("-", " ");
   if (settings.aperture === effectBaseSettings.aperture) {
-    return `${formatAperture(settings.aperture)} matches this scene's baseline depth of field.`;
+    return `${formatAperture(settings.aperture)}: baseline depth of field.`;
   }
   if (settings.aperture < effectBaseSettings.aperture) {
-    return `Opening up to ${formatAperture(settings.aperture)} lets in more light and throws the background ${depthOfField} — more of the scene falls out of focus.`;
+    return `${formatAperture(settings.aperture)}: more light, ${depthLabel} depth of field.`;
   }
-  return `Closing down to ${formatAperture(settings.aperture)} keeps depth of field ${depthOfField}, but needs more light from ISO or shutter to compensate.`;
+  return `${formatAperture(settings.aperture)}: less light, ${depthLabel} depth of field.`;
 }
 
 function shutterMessage(
@@ -85,17 +86,18 @@ function shutterMessage(
   motionBlur: Assessment["motionBlur"],
   hasMovingSubject: boolean,
 ): string {
+  const motionResult = motionBlur === "frozen" ? "motion frozen" : `${motionBlur} motion blur`;
   if (settings.shutterSeconds === effectBaseSettings.shutterSeconds) {
-    return `${formatShutter(settings.shutterSeconds)} matches this scene's baseline shutter speed.`;
+    return `${formatShutter(settings.shutterSeconds)}: baseline motion rendering.`;
   }
   if (settings.shutterSeconds > effectBaseSettings.shutterSeconds) {
     if (!hasMovingSubject) {
-      return `Slowing the shutter to ${formatShutter(settings.shutterSeconds)} gathers more light; the simulated camera stays stable, so stationary objects remain sharp.`;
+      return `${formatShutter(settings.shutterSeconds)}: more light; stationary scene stays sharp.`;
     }
-    return `Slowing the shutter to ${formatShutter(settings.shutterSeconds)} lets in more light, but motion blur becomes ${motionBlur} on the moving parts of the scene.`;
+    return `${formatShutter(settings.shutterSeconds)}: more light, ${motionResult}.`;
   }
   if (!hasMovingSubject) {
-    return `A faster shutter of ${formatShutter(settings.shutterSeconds)} lets in less light; stationary objects remain sharp.`;
+    return `${formatShutter(settings.shutterSeconds)}: less light; stationary scene stays sharp.`;
   }
-  return `A faster shutter of ${formatShutter(settings.shutterSeconds)} keeps motion blur ${motionBlur}, but lets in less light overall.`;
+  return `${formatShutter(settings.shutterSeconds)}: less light, ${motionResult}.`;
 }
