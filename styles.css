@@ -565,228 +565,439 @@ legend {
 }
 
 .tutorial-concept {
-  position: relative;
-  width: min(100%, 34rem);
+  width: min(100%, 38rem);
   margin: 1rem 0 0;
   overflow: hidden;
-  border: 1px solid rgb(255 255 255 / 10%);
+  border: 1px solid var(--line-strong);
   border-radius: 1.25rem;
-  background:
-    radial-gradient(circle at 50% 40%, rgb(41 151 255 / 14%), transparent 52%),
-    rgb(255 255 255 / 3%);
+  background: rgb(255 255 255 / 3%);
 }
 
-.tutorial-concept::after {
+.tutorial-concept__heading {
+  display: flex;
+  flex-direction: column;
+  gap: .25rem;
+  padding: 1rem 1rem .8rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.tutorial-concept__heading strong {
+  color: var(--ink);
+  font-size: .98rem;
+}
+
+.tutorial-concept__heading span {
+  color: var(--ink-soft);
+  font-size: .82rem;
+  line-height: 1.45;
+}
+
+.concept-before-after {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 1.5rem minmax(0, 1fr);
+  align-items: center;
+  gap: .5rem;
+  padding: .9rem 1rem;
+}
+
+.concept-example {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: .22rem;
+  color: var(--ink-soft);
+  font-size: .72rem;
+  text-align: center;
+}
+
+.concept-example strong {
+  margin-top: .2rem;
+  color: var(--ink);
+  font-size: .82rem;
+}
+
+.concept-arrow {
+  color: var(--accent-bright);
+  font-size: 1.4rem;
+  text-align: center;
+  animation: teaching-arrow 1.4s ease-in-out infinite;
+}
+
+.concept-scene,
+.concept-motion {
+  position: relative;
+  width: 100%;
+  height: 5rem;
+  overflow: hidden;
+  border: 1px solid rgb(255 255 255 / 12%);
+  border-radius: .8rem;
+  background: linear-gradient(#214b72 0 55%, #16222a 55%);
+}
+
+.concept-scene--dark {
+  filter: brightness(.42);
+}
+
+.concept-scene--bright-grain {
+  filter: brightness(1.12);
+}
+
+.concept-scene__sun {
+  position: absolute;
+  top: .7rem;
+  right: .8rem;
+  width: .7rem;
+  height: .7rem;
+  border-radius: 50%;
+  background: #ffd873;
+}
+
+.concept-scene__mountain {
+  position: absolute;
+  bottom: .8rem;
+  left: -.4rem;
+  width: 75%;
+  height: 2.5rem;
+  background: #213c4d;
+  clip-path: polygon(0 100%, 45% 10%, 65% 55%, 78% 34%, 100% 100%);
+}
+
+.concept-scene__person {
+  position: absolute;
+  right: 28%;
+  bottom: .65rem;
+  width: .55rem;
+  height: 1.55rem;
+  border-radius: 999px 999px .2rem .2rem;
+  background: #dcecff;
+}
+
+.concept-scene__person::before {
   content: "";
   position: absolute;
+  top: -.48rem;
+  left: -.08rem;
+  width: .7rem;
+  height: .7rem;
+  border-radius: 50%;
+  background: #dcecff;
+}
+
+.concept-scene__grain {
+  position: absolute;
   inset: 0;
-  pointer-events: none;
-  background: linear-gradient(115deg, transparent 25%, rgb(255 255 255 / 5%) 50%, transparent 75%);
-  transform: translateX(-100%);
-  animation: concept-sheen 5s ease-in-out infinite;
+  opacity: .8;
+  background-image:
+    radial-gradient(circle at 15% 22%, #ff9d70 0 1px, transparent 1.5px),
+    radial-gradient(circle at 72% 38%, #79c5ff 0 1px, transparent 1.5px),
+    radial-gradient(circle at 42% 76%, white 0 1px, transparent 1.5px);
+  background-size: 11px 13px, 15px 17px, 19px 21px;
+  animation: teaching-grain .7s steps(2, end) infinite;
 }
 
-.tutorial-concept svg {
+.concept-lens {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 5rem;
+  height: 5rem;
+  border: .55rem solid #252b35;
+  border-radius: 50%;
+  background: #06080c;
+  box-shadow: inset 0 0 0 2px rgb(255 255 255 / 18%);
+}
+
+.concept-lens i {
   display: block;
-  width: 100%;
-  height: auto;
+  border: 2px solid #8ed0ff;
+  border-radius: 50%;
+  background: rgb(41 151 255 / 28%);
+  box-shadow: 0 0 14px rgb(41 151 255 / 48%);
 }
 
-.tutorial-concept text {
-  fill: var(--ink-faint);
-  font-size: 8px;
+.concept-lens--small i {
+  width: .7rem;
+  height: .7rem;
+}
+
+.concept-lens--wide i {
+  width: 2.9rem;
+  height: 2.9rem;
+  animation: teaching-aperture 2s ease-in-out infinite;
+}
+
+.concept-motion {
+  display: flex;
+  align-items: center;
+  background:
+    linear-gradient(transparent 65%, rgb(255 255 255 / 20%) 66% 68%, transparent 69%),
+    #111820;
+}
+
+.concept-runner {
+  position: absolute;
+  z-index: 2;
+  left: 56%;
+  font-size: 2.1rem;
+  transform: translateX(-50%);
+}
+
+.concept-motion--frozen .concept-runner {
+  animation: teaching-freeze 2s ease-in-out infinite;
+}
+
+.concept-motion--trail .concept-runner {
+  animation: teaching-motion 1.8s ease-in-out infinite;
+}
+
+.concept-motion--trail i {
+  position: absolute;
+  left: 24%;
+  width: 35%;
+  height: .55rem;
+  border-radius: 999px;
+  background: linear-gradient(90deg, transparent, rgb(142 208 255 / 42%));
+  animation: teaching-trail 1.8s ease-in-out infinite;
+}
+
+.concept-motion--trail i:nth-child(2) {
+  translate: 0 1rem;
+  animation-delay: -.2s;
+}
+
+.concept-current {
+  display: grid;
+  grid-template-columns: auto minmax(4rem, 1fr) auto;
+  align-items: center;
+  gap: .7rem;
+  padding: .7rem 1rem;
+  border-top: 1px solid var(--line);
+  color: var(--ink-faint);
+  font-size: .7rem;
+}
+
+.concept-current strong {
+  color: var(--accent-bright);
+  font-size: .78rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.concept-current__track {
+  position: relative;
+  height: 3px;
+  border-radius: 999px;
+  background: rgb(255 255 255 / 14%);
+}
+
+.concept-current__track i {
+  position: absolute;
+  top: 50%;
+  width: .8rem;
+  height: .8rem;
+  border: 2px solid white;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 9px var(--accent);
+  translate: -50% -50%;
+  transition: left 220ms ease;
+}
+
+.concept-equation {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr auto 1fr;
+  align-items: stretch;
+  gap: .45rem;
+  padding: .9rem 1rem;
+}
+
+.concept-equation > div {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: .22rem;
+  min-height: 6.2rem;
+  padding: .55rem;
+  border: 1px solid var(--line);
+  border-radius: .85rem;
+  background: rgb(255 255 255 / 3%);
+  text-align: center;
+}
+
+.concept-equation > div:nth-of-type(1) {
+  animation: teaching-step 3.6s ease-in-out infinite;
+}
+
+.concept-equation > div:nth-of-type(2) {
+  animation: teaching-step 3.6s 1.2s ease-in-out infinite;
+}
+
+.concept-equation > div:nth-of-type(3) {
+  animation: teaching-step 3.6s 2.4s ease-in-out infinite;
+}
+
+.concept-equation strong {
+  font-size: .76rem;
+}
+
+.concept-equation small,
+.concept-equation b {
+  color: var(--ink-faint);
+  font-size: .65rem;
+  font-weight: 500;
+}
+
+.concept-equation b {
+  color: #ffb28e;
+}
+
+.concept-equation__result b,
+.concept-equation__result strong {
+  color: #a8f0ba;
+}
+
+.concept-equation__icon {
+  display: grid;
+  place-items: center;
+  min-width: 2rem;
+  height: 2rem;
+  padding: 0 .35rem;
+  border-radius: 999px;
+  background: var(--accent-soft);
+  color: var(--accent-bright);
+  font-size: .7rem;
+  font-weight: 800;
+}
+
+.concept-equation__operator {
+  align-self: center;
+  color: var(--ink-faint);
   font-weight: 700;
-  letter-spacing: .08em;
 }
 
-.tutorial-concept__flow,
-.tutorial-concept__rays path,
-.tutorial-concept__focused-rays path,
-.tutorial-concept__trail path,
-.tutorial-concept__energy,
-.tutorial-concept__beam,
-.tutorial-concept__triangle {
-  fill: none;
-  stroke: rgb(136 202 255 / 72%);
-  stroke-linecap: round;
-  stroke-width: 2;
+.concept-three {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: .55rem;
+  padding: .9rem 1rem 4rem;
 }
 
-.tutorial-concept__photons circle,
-.tutorial-concept__balance-light {
-  fill: #8ed0ff;
-  filter: drop-shadow(0 0 6px rgb(41 151 255 / 85%));
+.concept-three > div:not(.concept-three__result) {
+  display: flex;
+  flex-direction: column;
+  gap: .2rem;
+  padding: .65rem;
+  border: 1px solid var(--line);
+  border-radius: .8rem;
+  text-align: center;
 }
 
-.tutorial-concept__photons circle {
-  animation: photon-flow 2.2s ease-in-out infinite;
+.concept-three span {
+  color: var(--accent-bright);
+  font-size: .7rem;
+  font-weight: 700;
+  text-transform: uppercase;
 }
 
-.tutorial-concept__photons circle:nth-child(2) { animation-delay: -.35s; }
-.tutorial-concept__photons circle:nth-child(3) { animation-delay: -.7s; }
-.tutorial-concept__photons circle:nth-child(4) { animation-delay: -1.05s; }
-.tutorial-concept__photons circle:nth-child(5) { animation-delay: -1.4s; }
-
-.tutorial-concept__flow,
-.tutorial-concept__energy {
-  stroke-dasharray: 5 7;
-  animation: energy-flow 1.8s linear infinite;
+.concept-three strong {
+  font-size: .76rem;
 }
 
-.tutorial-concept__sensor,
-.tutorial-concept__frame {
-  fill: rgb(8 17 31 / 82%);
-  stroke: rgb(255 255 255 / 22%);
-  stroke-width: 2;
+.concept-three small {
+  color: var(--ink-faint);
+  font-size: .64rem;
 }
 
-.tutorial-concept__signal {
-  fill: var(--accent);
-  filter: drop-shadow(0 0 5px rgb(41 151 255 / 45%));
-  transition: height 260ms ease, y 260ms ease;
+.concept-three > div:not(.concept-three__result)::after {
+  content: "↓";
+  position: absolute;
+  bottom: 2.6rem;
+  color: var(--accent-bright);
+  font-size: 1.1rem;
+  animation: teaching-down 1.3s ease-in-out infinite;
 }
 
-.tutorial-concept__noise circle {
-  fill: #ff9f6e;
-  animation: noise-twinkle 900ms steps(2, end) infinite;
+.concept-three__result {
+  position: absolute;
+  bottom: .7rem;
+  left: 50%;
+  display: flex;
+  align-items: center;
+  gap: .45rem;
+  color: #a8f0ba;
+  font-size: .78rem;
+  translate: -50% 0;
 }
 
-.tutorial-concept__noise circle:nth-child(2n) { animation-delay: -.35s; }
-.tutorial-concept__noise circle:nth-child(3n) { animation-delay: -.65s; }
-
-.tutorial-concept__lens {
-  fill: rgb(8 17 31 / 84%);
-  stroke: rgb(136 202 255 / 58%);
-  stroke-width: 12;
+.concept-three__result i {
+  width: .65rem;
+  height: .65rem;
+  border-radius: 50%;
+  background: #30d158;
+  box-shadow: 0 0 12px rgb(48 209 88 / 70%);
+  animation: teaching-result 1.8s ease-in-out infinite;
 }
 
-.tutorial-concept__iris {
-  fill: rgb(41 151 255 / 20%);
-  stroke: #8ed0ff;
-  stroke-width: 3;
-  filter: drop-shadow(0 0 10px rgb(41 151 255 / 55%));
-  transition: r 320ms cubic-bezier(.2, .8, .2, 1);
+@keyframes teaching-arrow {
+  50% { translate: .22rem 0; }
 }
 
-.tutorial-concept__rays,
-.tutorial-concept__focused-rays {
-  animation: light-pulse 2.4s ease-in-out infinite;
+@keyframes teaching-grain {
+  50% { background-position: 3px -2px, -2px 4px, 4px 2px; }
 }
 
-.tutorial-concept__curtain {
-  fill: rgb(8 9 13 / 94%);
-  transition: width 280ms ease, x 280ms ease;
-}
-
-.tutorial-concept__runner {
-  fill: #8ed0ff;
-  stroke: #8ed0ff;
-  stroke-linecap: round;
-  stroke-width: 5;
-  transform-box: fill-box;
-  transform-origin: center;
-  transition: transform 280ms ease;
-  animation: runner-bob 700ms ease-in-out infinite alternate;
-}
-
-.tutorial-concept__trail {
-  transition: opacity 280ms ease;
-}
-
-.tutorial-concept__trail path {
-  stroke-dasharray: 4 6;
-  animation: trail-move 900ms linear infinite;
-}
-
-.tutorial-concept__beam {
-  stroke: rgb(255 255 255 / 48%);
-  stroke-width: 4;
-  animation: balance-breathe 2.6s ease-in-out infinite;
-}
-
-.tutorial-concept__pivot {
-  fill: rgb(41 151 255 / 18%);
-  stroke: rgb(136 202 255 / 55%);
-}
-
-.tutorial-concept__dial circle {
-  fill: rgb(8 17 31 / 85%);
-  stroke: rgb(136 202 255 / 62%);
-  stroke-width: 3;
-}
-
-.tutorial-concept__dial path {
-  stroke: white;
-  stroke-linecap: round;
-  stroke-width: 3;
-}
-
-.tutorial-concept__dial text,
-.tutorial-concept__node text {
-  fill: white;
-  font-size: 9px;
-  text-anchor: middle;
-}
-
-.tutorial-concept__balance-light {
-  transition: cx 280ms ease;
-  animation: balance-light 1.8s ease-in-out infinite;
-}
-
-.tutorial-concept__triangle {
-  stroke: rgb(255 255 255 / 24%);
-  stroke-width: 2;
-}
-
-.tutorial-concept__node circle {
-  fill: rgb(41 151 255 / 20%);
-  stroke: #8ed0ff;
-  stroke-width: 2;
-  transition: r 280ms ease;
-}
-
-.tutorial-concept__node--aperture circle { stroke: #bf8cff; }
-.tutorial-concept__node--shutter circle { stroke: #62e6b2; }
-
-.tutorial-concept__exposure {
-  fill: rgb(255 255 255 / 10%);
-  stroke: white;
-  stroke-width: 2;
-  animation: exposure-pulse 2s ease-in-out infinite;
-}
-
-@keyframes concept-sheen {
-  0%, 65% { transform: translateX(-100%); }
-  90%, 100% { transform: translateX(100%); }
-}
-
-@keyframes photon-flow {
+@keyframes teaching-aperture {
   50% {
-    opacity: .35;
-    transform: translateX(10px) scale(.75);
+    box-shadow: 0 0 24px rgb(41 151 255 / 72%);
+    transform: scale(1.08);
   }
 }
 
-@keyframes energy-flow { to { stroke-dashoffset: -24; } }
+@keyframes teaching-freeze {
+  0%, 30%, 100% { transform: translateX(-50%); }
+  15% { transform: translateX(-44%); }
+}
 
-@keyframes noise-twinkle { 50% { opacity: .18; } }
+@keyframes teaching-motion {
+  0% { transform: translateX(-80%); }
+  70%, 100% { transform: translateX(-20%); }
+}
 
-@keyframes light-pulse { 50% { opacity: .42; } }
-
-@keyframes runner-bob { to { translate: 0 -2px; } }
-
-@keyframes trail-move { to { stroke-dashoffset: -20; } }
-
-@keyframes balance-breathe { 50% { opacity: .58; } }
-
-@keyframes balance-light { 50% { filter: drop-shadow(0 0 12px rgb(41 151 255)); } }
-
-@keyframes exposure-pulse {
-  50% {
-    opacity: .65;
-    transform: scale(.88);
-    transform-origin: 180px 86px;
+@keyframes teaching-trail {
+  0% {
+    opacity: 0;
+    transform: scaleX(.3);
+    transform-origin: right;
   }
+
+  45%, 75% {
+    opacity: 1;
+    transform: scaleX(1);
+    transform-origin: right;
+  }
+
+  100% { opacity: 0; }
+}
+
+@keyframes teaching-step {
+  0%, 25%, 100% {
+    border-color: var(--line);
+    background: rgb(255 255 255 / 3%);
+  }
+
+  10% {
+    border-color: rgb(41 151 255 / 60%);
+    background: var(--accent-soft);
+  }
+}
+
+@keyframes teaching-down {
+  50% { translate: 0 .2rem; }
+}
+
+@keyframes teaching-result {
+  50% { transform: scale(1.25); }
 }
 
 .camera-workbench {
@@ -1850,6 +2061,18 @@ canvas {
 
   .tutorial__header h2 {
     font-size: 2.65rem;
+  }
+
+  .concept-equation {
+    grid-template-columns: 1fr;
+  }
+
+  .concept-equation__operator {
+    line-height: .6;
+  }
+
+  .concept-equation > div {
+    min-height: 4.5rem;
   }
 
   .camera-workbench {
