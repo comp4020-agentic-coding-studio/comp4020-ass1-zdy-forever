@@ -57,6 +57,7 @@ export function SceneSelector({ scenes, selectedId, onSelect, isUnlocked, cleare
         const classNames = ["scene-selector__option"];
         if (selected) classNames.push("scene-selector__option--selected");
         if (!unlocked) classNames.push("scene-selector__option--locked");
+        const status = cleared ? "Completed" : selected ? "In progress" : unlocked ? "Ready" : "Locked";
 
         return (
           <button
@@ -71,12 +72,21 @@ export function SceneSelector({ scenes, selectedId, onSelect, isUnlocked, cleare
             onClick={() => onSelect(scene.id)}
             onKeyDown={(event) => handleKeyDown(event, index)}
           >
-            <span className="scene-selector__title">
-              {scene.title}
-              {cleared && <span className="scene-selector__badge"> ✓ Cleared</span>}
+            <span className="scene-selector__media" aria-hidden="true">
+              <img src={scene.sourceImage} alt="" loading="lazy" decoding="async" />
+              <span className="scene-selector__media-overlay">
+                <span className="scene-selector__number">{String(index + 1).padStart(2, "0")}</span>
+                <span className="scene-selector__status" data-status={status.toLowerCase().replace(" ", "-")}>{status}</span>
+              </span>
             </span>
-            <span className="scene-selector__description">
-              {unlocked ? scene.description : `🔒 Locked — clear ${previousTitle} first`}
+            <span className="scene-selector__content">
+              <span className="scene-selector__title">
+                {scene.title}
+                {cleared && <span className="scene-selector__badge"> ✓ Cleared</span>}
+              </span>
+              <span className="scene-selector__description">
+                {unlocked ? scene.description : `Locked — clear ${previousTitle} first`}
+              </span>
             </span>
           </button>
         );

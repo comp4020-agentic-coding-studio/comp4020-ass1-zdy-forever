@@ -40,11 +40,14 @@ const NO_CLEARED = new Set<string>();
 
 describe("SceneSelector", () => {
   it("renders one option per scene with the selected one checked", () => {
-    render(<SceneSelector scenes={SCENES} selectedId="a" onSelect={vi.fn()} isUnlocked={unlockAll} clearedIds={NO_CLEARED} />);
+    const { container } = render(<SceneSelector scenes={SCENES} selectedId="a" onSelect={vi.fn()} isUnlocked={unlockAll} clearedIds={NO_CLEARED} />);
     const options = screen.getAllByRole("radio");
     expect(options).toHaveLength(2);
     expect(screen.getByRole("radio", { name: /Scene A/ })).toHaveAttribute("aria-checked", "true");
     expect(screen.getByRole("radio", { name: /Scene B/ })).toHaveAttribute("aria-checked", "false");
+    expect(container.querySelectorAll(".scene-selector__media img")).toHaveLength(2);
+    expect(screen.getByText("In progress")).toBeInTheDocument();
+    expect(screen.getByText("Ready")).toBeInTheDocument();
   });
 
   it("calls onSelect with the clicked scene's id", async () => {
@@ -111,6 +114,7 @@ describe("SceneSelector", () => {
     const clearedOption = screen.getByRole("radio", { name: /Scene A/ });
     expect(clearedOption).not.toBeDisabled();
     expect(screen.getByText(/Cleared/)).toBeInTheDocument();
+    expect(screen.getByText("Completed")).toBeInTheDocument();
   });
 
   it("skips a locked middle option when navigating with ArrowRight", async () => {
