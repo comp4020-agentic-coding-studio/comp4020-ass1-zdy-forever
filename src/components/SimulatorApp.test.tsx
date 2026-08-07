@@ -87,6 +87,20 @@ describe("SimulatorApp", () => {
     expect(screen.getByText("Scene cleared!")).toBeInTheDocument();
   });
 
+  it("reveals and applies a scene's standard answer", async () => {
+    const user = userEvent.setup();
+    render(<SimulatorApp />);
+    await waitForFrame();
+
+    await user.click(screen.getByRole("button", { name: /Standard answer/ }));
+    expect(screen.getByText("ISO 100, f/1.4, 1/500s")).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Apply this answer" }));
+    await waitForFrame();
+
+    expect(screen.getAllByText("1/500s").length).toBeGreaterThan(0);
+    expect(screen.getByText("Scene cleared!")).toBeInTheDocument();
+  });
+
   it("saves the current frame to the album and shows the updated count", async () => {
     const user = userEvent.setup();
     render(<SimulatorApp />);

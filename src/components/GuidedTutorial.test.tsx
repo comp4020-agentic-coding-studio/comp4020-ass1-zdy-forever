@@ -75,6 +75,19 @@ describe("GuidedTutorial", () => {
     expect(screen.getByRole("button", { name: "Continue to next lesson →" })).toBeEnabled();
   });
 
+  it("reveals and applies the lesson's standard answer", async () => {
+    const user = userEvent.setup();
+    render(<GuidedTutorial lesson={TUTORIALS[0]} lessonIndex={0} onContinue={vi.fn()} />);
+    await waitFor(() => expect(screen.queryByText("Rendering…")).not.toBeInTheDocument());
+
+    await user.click(screen.getByRole("button", { name: /Standard answer/ }));
+    expect(screen.getByText("ISO 1600, f/4, 1/60s")).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Apply this answer" }));
+
+    expect(screen.getAllByText("ISO 1600").length).toBeGreaterThan(0);
+    expect(screen.getByRole("button", { name: "Continue to next lesson →" })).toBeEnabled();
+  });
+
   it("does not pass a balanced exposure with unacceptable image quality", async () => {
     const user = userEvent.setup();
     render(<GuidedTutorial lesson={TUTORIALS[3]} lessonIndex={3} onContinue={vi.fn()} />);

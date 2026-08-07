@@ -11,6 +11,7 @@ import { useProcessedFrame } from "../processing/useProcessedFrame";
 import { useCameraSettings } from "../state/useCameraSettings";
 import { ComparisonSlider } from "./ComparisonSlider";
 import { ControlPanel } from "./ControlPanel";
+import { AnswerCard } from "./AnswerCard";
 import { ExposureTriangleDiagram } from "./ExposureTriangleDiagram";
 import { IndicatorBadges } from "./IndicatorBadges";
 import { SuccessOverlay } from "./SuccessOverlay";
@@ -173,6 +174,17 @@ export function GuidedTutorial({
             <p className="simulator-app__triangle-caption">Your exposure triangle</p>
             <ExposureTriangleDiagram isoStops={stops.isoStops} apertureStops={stops.apertureStops} shutterStops={stops.shutterStops} />
           </div>
+          {lesson.answerSettings && (
+            <AnswerCard
+              settings={lesson.answerSettings}
+              onApply={() => {
+                setTouchedKeys(new Set(lesson.enabledSettings));
+                camera.set("iso", lesson.answerSettings!.iso);
+                camera.set("aperture", lesson.answerSettings!.aperture);
+                camera.set("shutterSeconds", lesson.answerSettings!.shutterSeconds);
+              }}
+            />
+          )}
         </aside>
       </div>
 

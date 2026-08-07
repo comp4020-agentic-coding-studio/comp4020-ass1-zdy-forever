@@ -19,6 +19,7 @@ export type SceneDefinition = {
   focusDepth?: number;
   baseSettings: CameraSettings;
   effectBaseSettings?: CameraSettings;
+  answerSettings?: CameraSettings;
   qualityTargets?: QualityTargets;
   handheldThreshold?: number;
 };

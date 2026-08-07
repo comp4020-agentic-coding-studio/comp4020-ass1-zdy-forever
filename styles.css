@@ -876,6 +876,87 @@ canvas {
   transition: transform 280ms cubic-bezier(.2, .8, .2, 1);
 }
 
+.answer-card {
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: rgb(255 255 255 / 3%);
+}
+
+.answer-card[data-revealed="true"] {
+  border-color: rgb(41 151 255 / 32%);
+  background: var(--accent-soft);
+}
+
+.answer-card__reveal {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  min-height: 3.1rem;
+  border: 0;
+  border-radius: 0;
+  padding: .7rem .9rem;
+  background: transparent;
+  color: var(--ink-soft);
+  font-size: .82rem;
+  font-weight: 650;
+  text-align: left;
+}
+
+.answer-card__reveal > span:first-child {
+  display: flex;
+  align-items: center;
+  gap: .55rem;
+}
+
+.answer-card__reveal > span:first-child > span {
+  color: var(--accent-bright);
+  font-size: 1rem;
+}
+
+.answer-card__details {
+  display: grid;
+  gap: .7rem;
+  padding: .2rem .9rem .9rem;
+  animation: answer-reveal 260ms cubic-bezier(.2, .8, .2, 1) both;
+}
+
+.answer-card__details p,
+.answer-card__details small {
+  margin: 0;
+}
+
+.answer-card__details p {
+  color: var(--ink-faint);
+  font-size: .72rem;
+  font-weight: 650;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+.answer-card__details output {
+  color: #fff;
+  font-size: 1rem;
+  font-variant-numeric: tabular-nums;
+  font-weight: 650;
+}
+
+.answer-card__details small {
+  color: var(--ink-faint);
+  font-size: .72rem;
+}
+
+.answer-card__details button {
+  justify-self: start;
+  min-height: 2.4rem;
+  border-color: rgb(41 151 255 / 45%);
+  background: var(--accent);
+  color: white;
+  font-size: .78rem;
+  font-weight: 650;
+}
+
 .explanation-panel,
 .tutorial__completion {
   padding: 1.25rem;
@@ -1222,6 +1303,13 @@ canvas {
   to {
     opacity: 0;
     transform: rotate(calc(var(--i) * 30deg)) translateY(-14rem) scale(.2);
+  }
+}
+
+@keyframes answer-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(-.4rem);
   }
 }
 

@@ -14,6 +14,7 @@ export const SCENES: readonly SceneDefinition[] = [
     depthMap: "./scenes/portrait/depth-map-ai.svg",
     focusDepth: 0.15,
     baseSettings: { iso: 200, aperture: 4, shutterSeconds: 1 / 125 },
+    answerSettings: { iso: 100, aperture: 1.4, shutterSeconds: 1 / 500 },
     qualityTargets: {
       noise: ["minimal", "low"],
       depthOfField: ["shallow", "very-shallow"],
@@ -30,6 +31,7 @@ export const SCENES: readonly SceneDefinition[] = [
     motionMask: "./scenes/motion/motion-mask-ai.svg",
     motionVector: { x: 1, y: 0 },
     baseSettings: { iso: 400, aperture: 5.6, shutterSeconds: 1 / 500 },
+    answerSettings: { iso: 400, aperture: 5.6, shutterSeconds: 1 / 500 },
     qualityTargets: {
       noise: ["minimal", "low", "moderate"],
       motionBlur: ["frozen", "slight"],
@@ -45,6 +47,7 @@ export const SCENES: readonly SceneDefinition[] = [
     depthMap: "./scenes/night/depth-map-ai.svg",
     focusDepth: 0.4,
     baseSettings: { iso: 1600, aperture: 2.8, shutterSeconds: 1 / 30 },
+    answerSettings: { iso: 1600, aperture: 2.8, shutterSeconds: 1 / 30 },
     qualityTargets: {
       noise: ["minimal", "low", "moderate"],
       motionBlur: ["frozen", "slight", "visible"],
@@ -59,6 +62,7 @@ export const SCENES: readonly SceneDefinition[] = [
     depthMap: "./scenes/landscape/depth-map-ai.svg",
     focusDepth: 0.6,
     baseSettings: { iso: 100, aperture: 8, shutterSeconds: 1 / 250 },
+    answerSettings: { iso: 100, aperture: 8, shutterSeconds: 1 / 250 },
     qualityTargets: {
       noise: ["minimal", "low"],
       depthOfField: ["very-deep", "deep"],

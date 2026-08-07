@@ -13,6 +13,7 @@ import { useCameraSettings } from "../state/useCameraSettings";
 import { useLevelProgress } from "../state/useLevelProgress";
 import { AlbumComparisonView } from "./AlbumComparisonView";
 import { AlbumStrip } from "./AlbumStrip";
+import { AnswerCard } from "./AnswerCard";
 import { ComparisonSlider } from "./ComparisonSlider";
 import { ControlPanel } from "./ControlPanel";
 import { ExplanationPanel } from "./ExplanationPanel";
@@ -167,6 +168,16 @@ export function SimulatorApp() {
             <p className="simulator-app__triangle-caption">Your exposure triangle</p>
             <ExposureTriangleDiagram isoStops={stops.isoStops} apertureStops={stops.apertureStops} shutterStops={stops.shutterStops} />
           </div>
+          {scene.answerSettings && (
+            <AnswerCard
+              settings={scene.answerSettings}
+              onApply={() => {
+                camera.set("iso", scene.answerSettings!.iso);
+                camera.set("aperture", scene.answerSettings!.aperture);
+                camera.set("shutterSeconds", scene.answerSettings!.shutterSeconds);
+              }}
+            />
+          )}
         </aside>
       </div>
 
