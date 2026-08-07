@@ -60,7 +60,18 @@ main {
   z-index: 20;
   display: flex;
   align-items: center;
+  justify-content: space-between;
   height: 3.5rem;
+}
+
+.site-header__shortcut {
+  min-height: 2rem;
+  padding: .3rem .75rem;
+  border-color: rgb(41 151 255 / 35%);
+  background: var(--accent-soft);
+  color: var(--accent-bright);
+  font-size: .75rem;
+  font-weight: 650;
 }
 
 .site-brand {
@@ -382,8 +393,9 @@ legend {
   }
 }
 
-.opening__start,
-.tutorial__actions button:last-child {
+.opening__start {
+  min-height: 3.35rem;
+  padding: .8rem 1.45rem;
   border-color: var(--accent);
   background: var(--accent);
   color: #fff;
@@ -391,13 +403,7 @@ legend {
   box-shadow: 0 8px 24px rgb(41 151 255 / 22%);
 }
 
-.opening__start {
-  min-height: 3.35rem;
-  padding: .8rem 1.45rem;
-}
-
-.opening__start:hover:not(:disabled),
-.tutorial__actions button:last-child:hover:not(:disabled) {
+.opening__start:hover:not(:disabled) {
   border-color: var(--accent-bright);
   background: var(--accent-bright);
   box-shadow: 0 12px 34px rgb(41 151 255 / 34%);
@@ -1516,8 +1522,7 @@ canvas {
   font-weight: 650;
 }
 
-.explanation-panel,
-.tutorial__completion {
+.explanation-panel {
   padding: 1.25rem;
   border: 1px solid var(--line);
   border-radius: var(--radius-md);
@@ -1535,25 +1540,11 @@ canvas {
   color: var(--ink-soft);
 }
 
-.tutorial__completion[data-complete="true"] {
-  border-color: rgb(48 209 88 / 32%);
-  background: rgb(48 209 88 / 8%);
-}
-
-.tutorial__completion p {
-  margin: 0 0 1rem;
-  color: var(--ink-soft);
-}
-
-.tutorial__actions,
 .challenge-section__header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
-}
-
-.challenge-section__header {
   padding: 3.5rem 0 2rem;
   border-bottom: 1px solid var(--line);
 }
@@ -2065,11 +2056,6 @@ canvas {
     align-items: start;
   }
 
-  .camera-workbench__controls {
-    position: sticky;
-    top: 4.5rem;
-  }
-
   .camera-workbench__triangle .exposure-triangle-diagram {
     width: min(100%, 13rem);
   }
@@ -2181,7 +2167,6 @@ canvas {
     grid-column: 2;
   }
 
-  .tutorial__actions,
   .challenge-section__header {
     align-items: stretch;
     flex-direction: column;

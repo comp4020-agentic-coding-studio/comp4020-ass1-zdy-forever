@@ -13,25 +13,22 @@ test("the guided path progresses from one dial to all three before unlocking cha
   await expect(page.getByRole("heading", { name: "The challenges are unlocked" })).toHaveCount(0);
 
   await clickTimes(page, "Increase ISO", 4);
-  await page.getByRole("button", { name: "Decrease ISO" }).click();
-  await expect(page.getByRole("button", { name: "Continue to next lesson →" })).toBeEnabled();
-  await expect(page.getByText(/Lesson recorded/)).toBeVisible();
-  await page.getByRole("button", { name: "Continue to next lesson →" }).click();
+  await page.getByRole("button", { name: "Aperture — available" }).click();
   await expect(page.getByRole("heading", { name: "Aperture is the lens opening" })).toBeVisible();
 
   await clickTimes(page, "Decrease Aperture", 4);
-  await page.getByRole("button", { name: "Continue to next lesson →" }).click();
+  await page.getByRole("button", { name: "Shutter speed — available" }).click();
   await clickTimes(page, "Increase Shutter speed", 2);
-  await page.getByRole("button", { name: "Continue to next lesson →" }).click();
+  await page.getByRole("button", { name: "ISO + shutter — available" }).click();
 
   await clickTimes(page, "Increase ISO", 3);
   await clickTimes(page, "Increase Shutter speed", 4);
-  await page.getByRole("button", { name: "Continue to next lesson →" }).click();
+  await page.getByRole("button", { name: "The exposure triangle — available" }).click();
 
   await clickTimes(page, "Increase ISO", 3);
   await clickTimes(page, "Decrease Aperture", 4);
   await clickTimes(page, "Increase Shutter speed", 4);
-  await page.getByRole("button", { name: "Start the challenges →" }).click();
+  await page.getByRole("button", { name: "Challenges →" }).click();
 
   await expect(page.getByRole("heading", { name: "The challenges are unlocked" })).toBeVisible();
   await expect(page.getByRole("radio", { name: /^Portrait/ })).toBeVisible();

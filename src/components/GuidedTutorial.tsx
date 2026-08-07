@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useSceneAssets } from "../browser/useSceneAssets";
 import { calculateStops } from "../domain/exposure";
 import { assessSettings } from "../domain/explain";
-import { qualityIssueLabels, unacceptableQualityKeys } from "../domain/quality";
+import { unacceptableQualityKeys } from "../domain/quality";
 import { formatSettings, type SettingKey } from "../domain/settings";
 import { TUTORIALS, type TutorialDefinition } from "../domain/tutorials";
 import type { Assessment } from "../domain/types";
@@ -22,8 +22,6 @@ export type GuidedTutorialProps = {
   lessonIndex: number;
   isPreviouslyComplete?: boolean;
   onLessonComplete?: () => void;
-  onContinue: () => void;
-  onBack?: () => void;
   completedLessonIds?: ReadonlySet<string>;
   navigableLessonIds?: ReadonlySet<string>;
   onNavigate?: (lessonIndex: number) => void;
@@ -50,8 +48,6 @@ export function GuidedTutorial({
   lessonIndex,
   isPreviouslyComplete = false,
   onLessonComplete,
-  onContinue,
-  onBack,
   completedLessonIds,
   navigableLessonIds,
   onNavigate,
@@ -170,7 +166,7 @@ export function GuidedTutorial({
               />
             )}
             {lessonComplete && !showCelebration && (
-              <div className="lesson-complete-chip" role="status">✓ Lesson complete · Keep exploring or continue</div>
+              <div className="lesson-complete-chip" role="status">✓ Lesson complete · Keep exploring or choose another lesson</div>
             )}
           </div>
           <IndicatorBadges assessment={assessment} visibleKeys={relevantBadges(lesson.enabledSettings)} />
@@ -224,23 +220,6 @@ export function GuidedTutorial({
 
       </div>
 
-      <div className="tutorial__completion" data-complete={lessonComplete || undefined}>
-        <p aria-live="polite">
-          {lessonComplete
-            ? "Lesson recorded. Keep exploring these settings, or continue whenever you are ready."
-            : assessment.exposure === "balanced" && qualityIssues.length > 0
-              ? `Exposure is balanced, but ${qualityIssueLabels(qualityIssues).join(" and ")} is too compromised. Try a cleaner combination.`
-            : assessment.exposure === "balanced"
-              ? "Exposure is balanced. Try each available control before continuing."
-              : "Keep adjusting the available control(s) until Exposure reads balanced."}
-        </p>
-        <div className="tutorial__actions">
-          {onBack && <button type="button" onClick={onBack}>← Previous lesson</button>}
-          <button type="button" onClick={onContinue} disabled={!lessonComplete}>
-            {lessonIndex === TUTORIALS.length - 1 ? "Start the challenges →" : "Continue to next lesson →"}
-          </button>
-        </div>
-      </div>
     </section>
   );
 }

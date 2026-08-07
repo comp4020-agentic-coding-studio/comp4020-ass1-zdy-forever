@@ -21,17 +21,17 @@ afterEach(() => {
 
 describe("GuidedTutorial", () => {
   it("starts with only the lesson's single variable enabled", async () => {
-    render(<GuidedTutorial lesson={TUTORIALS[0]} lessonIndex={0} onContinue={vi.fn()} />);
+    render(<GuidedTutorial lesson={TUTORIALS[0]} lessonIndex={0} />);
     await waitFor(() => expect(screen.queryByText("Rendering…")).not.toBeInTheDocument());
     expect(screen.getByRole("slider", { name: "ISO" })).toBeEnabled();
     expect(screen.getByRole("slider", { name: "Aperture" })).toBeDisabled();
     expect(screen.getByRole("slider", { name: "Shutter speed" })).toBeDisabled();
-    expect(screen.getByRole("button", { name: "Continue to next lesson →" })).toBeDisabled();
+    expect(screen.queryByText(/Keep adjusting the available control/)).not.toBeInTheDocument();
   });
 
   it("keeps the detailed trade-off in an optional disclosure", async () => {
     const user = userEvent.setup();
-    render(<GuidedTutorial lesson={TUTORIALS[0]} lessonIndex={0} onContinue={vi.fn()} />);
+    render(<GuidedTutorial lesson={TUTORIALS[0]} lessonIndex={0} />);
     const summary = screen.getByText("Why this matters");
     const details = summary.closest("details");
 
@@ -41,16 +41,14 @@ describe("GuidedTutorial", () => {
     expect(screen.getByText(/Higher ISO reveals the scene/)).toBeInTheDocument();
   });
 
-  it("unlocks continue after the available control is used to balance exposure", async () => {
+  it("records completion while keeping the lesson open for exploration", async () => {
     const user = userEvent.setup();
-    const onContinue = vi.fn();
     const onLessonComplete = vi.fn();
     render(
       <GuidedTutorial
         lesson={TUTORIALS[0]}
         lessonIndex={0}
         onLessonComplete={onLessonComplete}
-        onContinue={onContinue}
       />,
     );
     await waitFor(() => expect(screen.queryByText("Rendering…")).not.toBeInTheDocument());
@@ -58,18 +56,12 @@ describe("GuidedTutorial", () => {
     const increaseIso = screen.getByRole("button", { name: "Increase ISO" });
     for (let step = 0; step < 4; step++) await user.click(increaseIso);
 
-    const continueButton = screen.getByRole("button", { name: "Continue to next lesson →" });
-    expect(continueButton).toBeEnabled();
     expect(screen.getByText("Lesson complete!")).toBeInTheDocument();
     expect(onLessonComplete).toHaveBeenCalledOnce();
 
     await user.click(screen.getByRole("button", { name: "Decrease ISO" }));
     expect(screen.getByText("dark")).toBeInTheDocument();
-    expect(screen.getByText(/Lesson recorded/)).toBeInTheDocument();
-    expect(continueButton).toBeEnabled();
-
-    await user.click(continueButton);
-    expect(onContinue).toHaveBeenCalledOnce();
+    expect(onLessonComplete).toHaveBeenCalledOnce();
   });
 
   it("keeps a previously completed lesson open for exploration", async () => {
@@ -78,13 +70,11 @@ describe("GuidedTutorial", () => {
         lesson={TUTORIALS[0]}
         lessonIndex={0}
         isPreviouslyComplete
-        onContinue={vi.fn()}
       />,
     );
     await waitFor(() => expect(screen.queryByText("Rendering…")).not.toBeInTheDocument());
 
-    expect(screen.getByText(/Lesson recorded/)).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Continue to next lesson →" })).toBeEnabled();
+    expect(screen.getByText(/Lesson complete · Keep exploring or choose another lesson/)).toBeInTheDocument();
   });
 
   it("navigates directly between completed lessons while locked lessons stay unavailable", async () => {
@@ -100,7 +90,6 @@ describe("GuidedTutorial", () => {
         completedLessonIds={completed}
         navigableLessonIds={navigable}
         onNavigate={onNavigate}
-        onContinue={vi.fn()}
       />,
     );
 
@@ -112,7 +101,7 @@ describe("GuidedTutorial", () => {
 
   it("reveals and applies the lesson's standard answer", async () => {
     const user = userEvent.setup();
-    render(<GuidedTutorial lesson={TUTORIALS[0]} lessonIndex={0} onContinue={vi.fn()} />);
+    render(<GuidedTutorial lesson={TUTORIALS[0]} lessonIndex={0} />);
     await waitFor(() => expect(screen.queryByText("Rendering…")).not.toBeInTheDocument());
 
     await user.click(screen.getByRole("button", { name: /Standard answer/ }));
@@ -120,7 +109,7 @@ describe("GuidedTutorial", () => {
     await user.click(screen.getByRole("button", { name: "Apply this answer" }));
 
     expect(screen.getAllByText("ISO 1600").length).toBeGreaterThan(0);
-    expect(screen.getByRole("button", { name: "Continue to next lesson →" })).toBeEnabled();
+    expect(screen.getByText("Lesson complete!")).toBeInTheDocument();
   });
 
   it("does not pass a balanced exposure with unacceptable image quality", async () => {
@@ -129,7 +118,8 @@ describe("GuidedTutorial", () => {
       ...TUTORIALS[3],
       qualityTargets: { ...TUTORIALS[3].qualityTargets, motionBlur: ["frozen"] as const },
     };
-    render(<GuidedTutorial lesson={strictMotionLesson} lessonIndex={3} onContinue={vi.fn()} />);
+    const onLessonComplete = vi.fn();
+    render(<GuidedTutorial lesson={strictMotionLesson} lessonIndex={3} onLessonComplete={onLessonComplete} />);
     await waitFor(() => expect(screen.queryByText("Rendering…")).not.toBeInTheDocument());
 
     await user.click(screen.getByRole("button", { name: "Increase ISO" }));
@@ -138,8 +128,8 @@ describe("GuidedTutorial", () => {
     for (let step = 0; step < 7; step++) await user.click(slowerShutter);
 
     expect(screen.getByText("balanced")).toBeInTheDocument();
-    expect(screen.getByText(/motion blur is too compromised/i)).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Continue to next lesson →" })).toBeDisabled();
+    expect(screen.queryByText("Lesson complete!")).not.toBeInTheDocument();
+    expect(onLessonComplete).not.toHaveBeenCalled();
   });
 
   it("uses a different source photograph for every lesson", () => {

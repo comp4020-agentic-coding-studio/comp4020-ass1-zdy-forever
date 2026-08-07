@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { GuidedTutorial } from "./src/components/GuidedTutorial";
 import { Opening } from "./src/components/Opening";
 import { SimulatorApp } from "./src/components/SimulatorApp";
@@ -40,8 +41,10 @@ export function App() {
     !hasCompletedTutorials() && loadCompletedLessonIds().size === 0,
   );
   const tutorialsComplete = lessonIndex >= TUTORIALS.length;
+  const challengesUnlocked = completedLessonIds.size === TUTORIALS.length;
   const nextIncompleteIndex = firstIncompleteLessonIndex(completedLessonIds);
   const navigableLessonIds = new Set(completedLessonIds);
+  const headerActions = document.getElementById("header-actions");
   if (nextIncompleteIndex < TUTORIALS.length) navigableLessonIds.add(TUTORIALS[nextIncompleteIndex].id);
 
   useEffect(() => {
@@ -72,18 +75,13 @@ export function App() {
     });
   }
 
-  function continueTutorial() {
-    setLessonIndex((current) => {
-      const next = Math.min(current + 1, TUTORIALS.length);
-      if (next === TUTORIALS.length) {
-        try {
-          window.localStorage.setItem(TUTORIAL_STORAGE_KEY, "true");
-        } catch {
-          // Progress persistence is helpful, but never blocks the lesson flow.
-        }
-      }
-      return next;
-    });
+  function openChallenges() {
+    try {
+      window.localStorage.setItem(TUTORIAL_STORAGE_KEY, "true");
+    } catch {
+      // Progress persistence is helpful, but never blocks navigation.
+    }
+    setLessonIndex(TUTORIALS.length);
   }
 
   function reviewTutorials() {
@@ -93,6 +91,10 @@ export function App() {
 
   return (
     <>
+      {headerActions && challengesUnlocked && !tutorialsComplete && createPortal(
+        <button className="site-header__shortcut" type="button" onClick={openChallenges}>Challenges →</button>,
+        headerActions,
+      )}
       {showIntroduction && !tutorialsComplete ? (
         <Opening onStart={() => setShowIntroduction(false)} />
       ) : tutorialsComplete ? (
@@ -114,8 +116,6 @@ export function App() {
           lessonIndex={lessonIndex}
           isPreviouslyComplete={completedLessonIds.has(TUTORIALS[lessonIndex].id)}
           onLessonComplete={() => recordLessonComplete(TUTORIALS[lessonIndex].id)}
-          onContinue={continueTutorial}
-          onBack={lessonIndex > 0 ? () => setLessonIndex((current) => current - 1) : undefined}
           completedLessonIds={completedLessonIds}
           navigableLessonIds={navigableLessonIds}
           onNavigate={setLessonIndex}
