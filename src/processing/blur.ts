@@ -1,9 +1,10 @@
 import type { PixelImage } from "../domain/types";
 
-// Separable box blur. Two passes (horizontal then vertical) at the same
-// radius approximate a Gaussian closely enough for this simulator's
-// pyramid-of-discrete-levels approach, and stay simple to reason about and
-// unit-test.
+// Separable box blur. Each pass uses a rolling window: moving one pixel
+// removes the sample that left the window and adds the new sample that
+// entered it. That makes the cost O(width * height), independent of the
+// radius. The previous nested-kernel implementation repeated up to 53
+// samples per pixel at radius 26 and made the first frame take seconds.
 export function boxBlur(image: PixelImage, radiusPx: number): PixelImage {
   if (radiusPx <= 0) {
     return { width: image.width, height: image.height, data: Uint8ClampedArray.from(image.data) };
@@ -16,32 +17,55 @@ function boxBlurPass(image: PixelImage, radius: number, axis: "horizontal" | "ve
   const { width, height, data } = image;
   const output = new Uint8ClampedArray(data.length);
 
-  for (let y = 0; y < height; y++) {
-    for (let x = 0; x < width; x++) {
-      let r = 0;
-      let g = 0;
-      let b = 0;
-      let a = 0;
-      let count = 0;
+  const lineCount = axis === "horizontal" ? height : width;
+  const lineLength = axis === "horizontal" ? width : height;
 
-      for (let k = -radius; k <= radius; k++) {
-        const sx = axis === "horizontal" ? x + k : x;
-        const sy = axis === "vertical" ? y + k : y;
-        if (sx < 0 || sx >= width || sy < 0 || sy >= height) continue;
+  for (let line = 0; line < lineCount; line++) {
+    let red = 0;
+    let green = 0;
+    let blue = 0;
+    let alpha = 0;
+    let count = 0;
 
-        const offset = (sy * width + sx) * 4;
-        r += data[offset];
-        g += data[offset + 1];
-        b += data[offset + 2];
-        a += data[offset + 3];
-        count++;
+    const offsetAt = (position: number) =>
+      axis === "horizontal" ? (line * width + position) * 4 : (position * width + line) * 4;
+
+    // The first pixel's window is clipped at the image edge.
+    for (let position = 0; position <= Math.min(radius, lineLength - 1); position++) {
+      const offset = offsetAt(position);
+      red += data[offset];
+      green += data[offset + 1];
+      blue += data[offset + 2];
+      alpha += data[offset + 3];
+      count++;
+    }
+
+    for (let position = 0; position < lineLength; position++) {
+      const outputOffset = offsetAt(position);
+      output[outputOffset] = red / count;
+      output[outputOffset + 1] = green / count;
+      output[outputOffset + 2] = blue / count;
+      output[outputOffset + 3] = alpha / count;
+
+      const leaving = position - radius;
+      if (leaving >= 0) {
+        const offset = offsetAt(leaving);
+        red -= data[offset];
+        green -= data[offset + 1];
+        blue -= data[offset + 2];
+        alpha -= data[offset + 3];
+        count--;
       }
 
-      const offset = (y * width + x) * 4;
-      output[offset] = r / count;
-      output[offset + 1] = g / count;
-      output[offset + 2] = b / count;
-      output[offset + 3] = a / count;
+      const entering = position + radius + 1;
+      if (entering < lineLength) {
+        const offset = offsetAt(entering);
+        red += data[offset];
+        green += data[offset + 1];
+        blue += data[offset + 2];
+        alpha += data[offset + 3];
+        count++;
+      }
     }
   }
 

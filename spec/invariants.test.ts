@@ -41,8 +41,8 @@ describe("invariants: every page", () => {
         expect(doc.querySelector('meta[name="viewport"]')).toBeTruthy();
       });
 
-      it("has a navigation landmark", () => {
-        expect(doc.querySelector("nav")).toBeTruthy();
+      it("has a main content landmark", () => {
+        expect(doc.querySelector("main")).toBeTruthy();
       });
 
       it("has exactly one top-level heading", () => {

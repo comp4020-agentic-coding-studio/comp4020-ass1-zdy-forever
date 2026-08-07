@@ -7,35 +7,10 @@
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
-    <header>
-      <nav aria-label="Primary">
-        <a href="./">Home</a>
-      </nav>
-      <button type="button" id="reduce-motion-toggle" aria-pressed="false">Reduce motion</button>
-    </header>
     <main>
       <h1>Every Setting Costs Something</h1>
       <div id="root"></div>
     </main>
-    <script>
-      // Static, no-JS-framework-required control: real markup outside #root so
-      // it works even before the React bundle finishes loading. Persists
-      // across visits and is honoured by CSS via [data-reduce-motion="true"].
-      (function () {
-        var toggle = document.getElementById("reduce-motion-toggle");
-        var stored = localStorage.getItem("reduce-motion") === "true";
-        function apply(reduced) {
-          document.documentElement.dataset.reduceMotion = String(reduced);
-          toggle.setAttribute("aria-pressed", String(reduced));
-        }
-        apply(stored);
-        toggle.addEventListener("click", function () {
-          var next = toggle.getAttribute("aria-pressed") !== "true";
-          localStorage.setItem("reduce-motion", String(next));
-          apply(next);
-        });
-      })();
-    </script>
     <script type="module" src="./main.tsx"></script>
   </body>
 </html>

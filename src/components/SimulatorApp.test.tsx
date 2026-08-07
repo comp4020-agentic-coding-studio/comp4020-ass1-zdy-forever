@@ -74,6 +74,19 @@ describe("SimulatorApp", () => {
     expect(screen.getByText(/Raising ISO to ISO 400/)).toBeInTheDocument();
   });
 
+  it("shows an immediate celebration over the photograph when a scene is balanced", async () => {
+    const user = userEvent.setup();
+    render(<SimulatorApp />);
+    await waitForFrame();
+
+    await user.click(screen.getByRole("button", { name: "Increase ISO" }));
+    await waitForFrame();
+    await user.click(screen.getByRole("button", { name: "Increase ISO" }));
+    await waitForFrame();
+
+    expect(screen.getByText("Scene cleared!")).toBeInTheDocument();
+  });
+
   it("saves the current frame to the album and shows the updated count", async () => {
     const user = userEvent.setup();
     render(<SimulatorApp />);

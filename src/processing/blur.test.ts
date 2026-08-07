@@ -25,7 +25,37 @@ function variance(image: PixelImage): number {
   return values.reduce((sum, v) => sum + (v - mean) ** 2, 0) / values.length;
 }
 
+function referenceBoxBlur(image: PixelImage, radius: number): PixelImage {
+  function pass(input: PixelImage, horizontal: boolean): PixelImage {
+    const output = new Uint8ClampedArray(input.data.length);
+    for (let y = 0; y < input.height; y++) {
+      for (let x = 0; x < input.width; x++) {
+        const sums = [0, 0, 0, 0];
+        let count = 0;
+        for (let k = -radius; k <= radius; k++) {
+          const sx = horizontal ? x + k : x;
+          const sy = horizontal ? y : y + k;
+          if (sx < 0 || sx >= input.width || sy < 0 || sy >= input.height) continue;
+          const sampleOffset = (sy * input.width + sx) * 4;
+          for (let channel = 0; channel < 4; channel++) sums[channel] += input.data[sampleOffset + channel];
+          count++;
+        }
+        const outputOffset = (y * input.width + x) * 4;
+        for (let channel = 0; channel < 4; channel++) output[outputOffset + channel] = sums[channel] / count;
+      }
+    }
+    return { width: input.width, height: input.height, data: output };
+  }
+
+  return pass(pass(image, true), false);
+}
+
 describe("boxBlur", () => {
+  it("matches the direct kernel calculation at image edges and in the centre", () => {
+    const image = checkerboard(9, 7);
+    expect(Array.from(boxBlur(image, 3).data)).toEqual(Array.from(referenceBoxBlur(image, 3).data));
+  });
+
   it("returns an unchanged copy at radius 0", () => {
     const image = checkerboard(8, 8);
     const blurred = boxBlur(image, 0);

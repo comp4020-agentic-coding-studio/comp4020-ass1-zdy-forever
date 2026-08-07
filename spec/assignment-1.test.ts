@@ -42,15 +42,17 @@ describe("assignment 1: static, no backend", () => {
 
 describe("assignment 1: the visitor does something that changes what they see", () => {
   it("has at least one interactive control beyond navigation links", () => {
-    // Structural proxy only: real controls don't execute in this static HTML
-    // parse, so this can't confirm the interaction actually changes the view
-    // — it can only confirm there's something for a visitor to act on besides
-    // "go to another page". The crit checks the rest.
+    // Structural proxy only: controls rendered by a client application do not
+    // execute in this static HTML parse, so accept either a static control or
+    // a module-powered application mount. Browser tests check the real UI.
     const INTERACTIVE_SELECTOR = "button, input, select, textarea, [role='button'], [tabindex]";
-    const hasControl = pages.some((doc) => doc.querySelector(INTERACTIVE_SELECTOR) !== null);
+    const hasControl = pages.some((doc) =>
+      doc.querySelector(INTERACTIVE_SELECTOR) !== null ||
+      (doc.querySelector("#root") !== null && doc.querySelector('script[type="module"]') !== null),
+    );
     expect(
       hasControl,
-      "no page has a button/input/select/textarea or interactive-role element — the brief asks the visitor to do something, not only read",
+      "no page has a static control or a client application mount — the brief asks the visitor to do something, not only read",
     ).toBe(true);
   });
 });

@@ -67,6 +67,27 @@ describe("ControlPanel", () => {
     expect(onSet).toHaveBeenCalledWith("iso", 800);
   });
 
+  it("uses the preview while dragging and requests the full frame when the drag ends", () => {
+    const onInteractionStart = vi.fn();
+    const onInteractionEnd = vi.fn();
+    render(
+      <ControlPanel
+        settings={SETTINGS}
+        onStep={vi.fn()}
+        onSet={vi.fn()}
+        onKeyDown={vi.fn()}
+        onReset={vi.fn()}
+        onInteractionStart={onInteractionStart}
+        onInteractionEnd={onInteractionEnd}
+      />,
+    );
+    const isoSlider = screen.getByDisplayValue("2");
+    fireEvent.pointerDown(isoSlider);
+    fireEvent.pointerUp(isoSlider);
+    expect(onInteractionStart).toHaveBeenCalledOnce();
+    expect(onInteractionEnd).toHaveBeenCalledOnce();
+  });
+
   it("calls onKeyDown when a key is pressed on a slider", async () => {
     const user = userEvent.setup();
     const onKeyDown = vi.fn();

@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="720" height="480" viewBox="0 0 720 480">
+  <defs><filter id="soft"><feGaussianBlur stdDeviation="8"/></filter></defs>
+  <rect width="720" height="480" fill="#000"/>
+  <ellipse cx="360" cy="294" rx="92" ry="82" fill="#fff" filter="url(#soft)"/>
+</svg>

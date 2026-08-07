@@ -5,10 +5,10 @@ import { createFrameRequestController } from "./frameRequestController";
 import { runPipeline, type PipelineInput } from "./pipeline";
 import type { WorkerRequest, WorkerResponse } from "./worker";
 
-// Reached only while `isInteracting` is true (e.g. mid-drag on a slider):
-// processing a quarter-size frame is roughly 16x cheaper, which is what
-// keeps a drag responsive on the main thread even without a worker.
-const LOW_RES_FACTOR = 4;
+// Reached only while `isInteracting` is true (e.g. mid-drag on a slider).
+// The 720px runtime assets become a crisp 360px preview while dragging,
+// then settle to the full frame on pointer-up.
+const LOW_RES_FACTOR = 2;
 
 function supportsWorker(): boolean {
   return typeof Worker !== "undefined";

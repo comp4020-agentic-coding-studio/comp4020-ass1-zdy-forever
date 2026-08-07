@@ -1,0 +1,112 @@
+import type { SettingKey } from "./settings";
+import type { CameraSettings, SceneDefinition } from "./types";
+
+export type TutorialDefinition = SceneDefinition & {
+  stepLabel: string;
+  lessonTitle: string;
+  purpose: string;
+  tradeoff: string;
+  goal: string;
+  enabledSettings: readonly SettingKey[];
+  initialSettings: CameraSettings;
+};
+
+export const TUTORIALS: readonly TutorialDefinition[] = [
+  {
+    id: "tutorial-iso",
+    stepLabel: "Single dial · 1 of 3",
+    title: "ISO",
+    lessonTitle: "ISO amplifies the signal",
+    description: "Brighten a dim desk using only ISO.",
+    purpose: "ISO makes the captured signal brighter without gathering more light.",
+    tradeoff: "Higher ISO reveals the scene, but grain and colour noise build up in the shadows.",
+    goal: "Move ISO until the exposure badge reads balanced.",
+    sourceImage: "./tutorials/01-iso.png",
+    baseSettings: { iso: 1600, aperture: 4, shutterSeconds: 1 / 60 },
+    effectBaseSettings: { iso: 200, aperture: 4, shutterSeconds: 1 / 60 },
+    qualityTargets: { noise: ["minimal", "low", "moderate"] },
+    initialSettings: { iso: 100, aperture: 4, shutterSeconds: 1 / 60 },
+    enabledSettings: ["iso"],
+  },
+  {
+    id: "tutorial-aperture",
+    stepLabel: "Single dial · 2 of 3",
+    title: "Aperture",
+    lessonTitle: "Aperture is the lens opening",
+    description: "Open the lens and watch the background change.",
+    purpose: "A smaller f-number opens the lens wider, letting in more light.",
+    tradeoff: "A wide aperture also makes depth of field shallower, so the background falls out of focus.",
+    goal: "Use only aperture to bring the flower scene to balanced exposure.",
+    sourceImage: "./tutorials/02-aperture.png",
+    depthMap: "./tutorials/02-aperture-depth.svg",
+    focusDepth: 0.15,
+    baseSettings: { iso: 200, aperture: 4, shutterSeconds: 1 / 125 },
+    effectBaseSettings: { iso: 200, aperture: 8, shutterSeconds: 1 / 125 },
+    qualityTargets: { depthOfField: ["very-deep", "deep", "moderate", "shallow"] },
+    initialSettings: { iso: 200, aperture: 16, shutterSeconds: 1 / 125 },
+    enabledSettings: ["aperture"],
+  },
+  {
+    id: "tutorial-shutter",
+    stepLabel: "Single dial · 3 of 3",
+    title: "Shutter speed",
+    lessonTitle: "Shutter speed controls time",
+    description: "Choose how long the moving skateboarder is recorded.",
+    purpose: "A slower shutter stays open longer and gathers more light.",
+    tradeoff: "Longer exposure time also records movement as blur; a fast shutter freezes action but darkens the frame.",
+    goal: "Use only shutter speed to reach balanced exposure.",
+    sourceImage: "./tutorials/03-shutter.png",
+    motionMask: "./tutorials/03-shutter-motion.svg",
+    motionVector: { x: 1, y: 0 },
+    baseSettings: { iso: 400, aperture: 5.6, shutterSeconds: 1 / 500 },
+    effectBaseSettings: { iso: 400, aperture: 5.6, shutterSeconds: 1 / 2000 },
+    qualityTargets: { motionBlur: ["frozen", "slight", "visible"] },
+    initialSettings: { iso: 400, aperture: 5.6, shutterSeconds: 1 / 2000 },
+    enabledSettings: ["shutterSeconds"],
+  },
+  {
+    id: "tutorial-two-dials",
+    stepLabel: "Two dials",
+    title: "ISO + shutter",
+    lessonTitle: "Two controls can pay the same light bill",
+    description: "Balance a cyclist at dusk with ISO and shutter speed.",
+    purpose: "ISO can rescue the light lost to a fast action-freezing shutter.",
+    tradeoff: "Decide which cost is safer here: extra noise or extra motion blur.",
+    goal: "Change both controls, balance the exposure, and avoid strong noise or motion blur.",
+    sourceImage: "./tutorials/04-two-dials.png",
+    motionMask: "./tutorials/04-two-dials-motion.svg",
+    motionVector: { x: 1, y: 0 },
+    baseSettings: { iso: 800, aperture: 4, shutterSeconds: 1 / 125 },
+    effectBaseSettings: { iso: 400, aperture: 4, shutterSeconds: 1 / 500 },
+    qualityTargets: {
+      noise: ["minimal", "low", "moderate"],
+      motionBlur: ["frozen", "slight", "visible"],
+    },
+    initialSettings: { iso: 100, aperture: 4, shutterSeconds: 1 / 2000 },
+    enabledSettings: ["iso", "shutterSeconds"],
+  },
+  {
+    id: "tutorial-three-dials",
+    stepLabel: "Three dials",
+    title: "The exposure triangle",
+    lessonTitle: "Now balance all three costs",
+    description: "Prepare for the challenges with one complete camera setup.",
+    purpose: "ISO, aperture and shutter speed all change brightness, but each changes a different visual quality.",
+    tradeoff: "There is no free setting: protect the detail, focus and motion that matter most in this scene.",
+    goal: "Change all three controls and reach balanced exposure to unlock the challenges.",
+    sourceImage: "./tutorials/05-three-dials.png",
+    depthMap: "./tutorials/05-three-dials-depth.svg",
+    motionMask: "./tutorials/05-three-dials-motion.svg",
+    motionVector: { x: 1, y: 0 },
+    focusDepth: 0.18,
+    baseSettings: { iso: 800, aperture: 4, shutterSeconds: 1 / 125 },
+    effectBaseSettings: { iso: 400, aperture: 8, shutterSeconds: 1 / 500 },
+    qualityTargets: {
+      noise: ["minimal", "low", "moderate"],
+      depthOfField: ["very-deep", "deep", "moderate", "shallow"],
+      motionBlur: ["frozen", "slight", "visible"],
+    },
+    initialSettings: { iso: 100, aperture: 16, shutterSeconds: 1 / 2000 },
+    enabledSettings: ["iso", "aperture", "shutterSeconds"],
+  },
+];

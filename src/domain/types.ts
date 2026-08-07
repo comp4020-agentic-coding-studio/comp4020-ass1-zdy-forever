@@ -18,6 +18,8 @@ export type SceneDefinition = {
   };
   focusDepth?: number;
   baseSettings: CameraSettings;
+  effectBaseSettings?: CameraSettings;
+  qualityTargets?: QualityTargets;
   handheldThreshold?: number;
 };
 
@@ -25,6 +27,12 @@ export type ExposureLevel = "very-dark" | "dark" | "balanced" | "bright" | "clip
 export type NoiseLevel = "minimal" | "low" | "moderate" | "strong" | "severe";
 export type DepthOfFieldLevel = "very-shallow" | "shallow" | "moderate" | "deep" | "very-deep";
 export type MotionBlurLevel = "frozen" | "slight" | "visible" | "strong" | "extreme";
+
+export type QualityTargets = {
+  noise?: readonly NoiseLevel[];
+  depthOfField?: readonly DepthOfFieldLevel[];
+  motionBlur?: readonly MotionBlurLevel[];
+};
 
 export type Assessment = {
   exposure: ExposureLevel;

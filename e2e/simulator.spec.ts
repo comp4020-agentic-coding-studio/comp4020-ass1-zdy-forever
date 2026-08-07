@@ -1,6 +1,7 @@
 import { expect, test } from "@playwright/test";
 
 test.beforeEach(async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem("camera-school-tutorial-complete", "true"));
   await page.goto("/");
 });
 

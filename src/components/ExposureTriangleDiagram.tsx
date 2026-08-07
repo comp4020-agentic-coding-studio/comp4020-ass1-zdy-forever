@@ -14,10 +14,10 @@ const VERTICES: Record<VertexKey, { x: number; y: number }> = {
   shutter: { x: 174, y: 168 },
 };
 
-const VERTEX_COPY: Record<VertexKey, { label: string; cost: string }> = {
-  iso: { label: "ISO", cost: "higher = more grain" },
-  aperture: { label: "Aperture", cost: "wider = shallower focus" },
-  shutter: { label: "Shutter", cost: "slower = more motion blur" },
+const VERTEX_LABELS: Record<VertexKey, string> = {
+  iso: "ISO",
+  aperture: "Aperture",
+  shutter: "Shutter",
 };
 
 // Purely illustrative: clamps each control's exposure contribution to ±3
@@ -62,10 +62,7 @@ export function ExposureTriangleDiagram({
           <g key={key} className="exposure-triangle-diagram__vertex">
             <circle cx={VERTICES[key].x} cy={VERTICES[key].y} r={5} />
             <text x={VERTICES[key].x} y={VERTICES[key].y + (key === "iso" ? -14 : 22)} textAnchor="middle" className="exposure-triangle-diagram__label">
-              {VERTEX_COPY[key].label}
-            </text>
-            <text x={VERTICES[key].x} y={VERTICES[key].y + (key === "iso" ? -2 : 36)} textAnchor="middle" className="exposure-triangle-diagram__cost">
-              {VERTEX_COPY[key].cost}
+              {VERTEX_LABELS[key]}
             </text>
           </g>
         ))}

@@ -16,23 +16,24 @@ export type AssessmentContext = {
 export function assessSettings({ settings, scene }: AssessmentContext): Assessment {
   const stops = calculateStops(settings, scene.baseSettings);
   const exposure = classifyExposure(stops.totalStops);
+  const effectBaseSettings = scene.effectBaseSettings ?? scene.baseSettings;
 
-  const noiseStrengthValue = noiseStrength(noiseStopsAboveBase(settings.iso, scene.baseSettings.iso));
+  const noiseStrengthValue = noiseStrength(noiseStopsAboveBase(settings.iso, effectBaseSettings.iso));
   const noise = classifyNoise(noiseStrengthValue);
 
-  const wideningStops = apertureWideningStops(settings.aperture, scene.baseSettings.aperture);
+  const wideningStops = apertureWideningStops(settings.aperture, effectBaseSettings.aperture);
   const dofStrength = blurStrength(wideningStops);
   const depthOfField = classifyDepthOfField(dofStrength);
 
-  const slownessStops = shutterSlownessStops(settings.shutterSeconds, scene.baseSettings.shutterSeconds);
+  const slownessStops = shutterSlownessStops(settings.shutterSeconds, effectBaseSettings.shutterSeconds);
   const motionStrength = subjectMotionBlurStrength(slownessStops);
   const motionBlur = classifyMotionBlur(motionStrength);
 
   const messages = [
     exposureMessage(settings, stops.totalStops, exposure),
-    isoMessage(settings, scene, noise),
-    apertureMessage(settings, scene, depthOfField),
-    shutterMessage(settings, scene, motionBlur),
+    isoMessage(settings, effectBaseSettings, noise),
+    apertureMessage(settings, effectBaseSettings, depthOfField),
+    shutterMessage(settings, effectBaseSettings, motionBlur),
   ];
 
   return { exposure, noise, depthOfField, motionBlur, messages };
@@ -53,11 +54,11 @@ function exposureMessage(
   return `This combination is about ${rounded} stops darker than this scene's baseline — ${exposureLabel(exposure)}.`;
 }
 
-function isoMessage(settings: CameraSettings, scene: SceneDefinition, noise: Assessment["noise"]): string {
-  if (settings.iso === scene.baseSettings.iso) {
+function isoMessage(settings: CameraSettings, effectBaseSettings: CameraSettings, noise: Assessment["noise"]): string {
+  if (settings.iso === effectBaseSettings.iso) {
     return `${formatIso(settings.iso)} matches this scene's baseline, so it adds no noise on its own.`;
   }
-  if (settings.iso > scene.baseSettings.iso) {
+  if (settings.iso > effectBaseSettings.iso) {
     return `Raising ISO to ${formatIso(settings.iso)} brightens the image but adds ${noise} noise, most visible in the shadows.`;
   }
   return `Lowering ISO to ${formatIso(settings.iso)} keeps noise ${noise}, but darkens the image unless another setting compensates.`;
@@ -65,13 +66,13 @@ function isoMessage(settings: CameraSettings, scene: SceneDefinition, noise: Ass
 
 function apertureMessage(
   settings: CameraSettings,
-  scene: SceneDefinition,
+  effectBaseSettings: CameraSettings,
   depthOfField: Assessment["depthOfField"],
 ): string {
-  if (settings.aperture === scene.baseSettings.aperture) {
+  if (settings.aperture === effectBaseSettings.aperture) {
     return `${formatAperture(settings.aperture)} matches this scene's baseline depth of field.`;
   }
-  if (settings.aperture < scene.baseSettings.aperture) {
+  if (settings.aperture < effectBaseSettings.aperture) {
     return `Opening up to ${formatAperture(settings.aperture)} lets in more light and throws the background ${depthOfField} — more of the scene falls out of focus.`;
   }
   return `Closing down to ${formatAperture(settings.aperture)} keeps depth of field ${depthOfField}, but needs more light from ISO or shutter to compensate.`;
@@ -79,13 +80,13 @@ function apertureMessage(
 
 function shutterMessage(
   settings: CameraSettings,
-  scene: SceneDefinition,
+  effectBaseSettings: CameraSettings,
   motionBlur: Assessment["motionBlur"],
 ): string {
-  if (settings.shutterSeconds === scene.baseSettings.shutterSeconds) {
+  if (settings.shutterSeconds === effectBaseSettings.shutterSeconds) {
     return `${formatShutter(settings.shutterSeconds)} matches this scene's baseline shutter speed.`;
   }
-  if (settings.shutterSeconds > scene.baseSettings.shutterSeconds) {
+  if (settings.shutterSeconds > effectBaseSettings.shutterSeconds) {
     return `Slowing the shutter to ${formatShutter(settings.shutterSeconds)} lets in more light, but motion blur becomes ${motionBlur} on the moving parts of the scene.`;
   }
   return `A faster shutter of ${formatShutter(settings.shutterSeconds)} keeps motion blur ${motionBlur}, but lets in less light overall.`;

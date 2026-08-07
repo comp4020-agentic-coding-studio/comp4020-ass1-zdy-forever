@@ -1,5 +1,9 @@
 import { expect, test } from "@playwright/test";
 
+test.beforeEach(async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem("camera-school-tutorial-complete", "true"));
+});
+
 test.describe("app load", () => {
   test("loads with no console errors and no failed requests", async ({ page }) => {
     const consoleErrors: string[] = [];
@@ -16,29 +20,15 @@ test.describe("app load", () => {
     expect(failedRequests, `failed requests: ${failedRequests.join(", ")}`).toEqual([]);
   });
 
-  test("has exactly one h1 and a primary navigation landmark", async ({ page }) => {
+  test("has exactly one h1 and no redundant home navigation", async ({ page }) => {
     await page.goto("/");
     await expect(page.locator("h1")).toHaveCount(1);
-    await expect(page.getByRole("navigation", { name: "Primary" })).toBeVisible();
+    await expect(page.getByRole("link", { name: "Home" })).toHaveCount(0);
   });
 
   test("has an interactive control the visitor can act on beyond navigation", async ({ page }) => {
     await page.goto("/");
     await expect(page.getByRole("radio").first()).toBeVisible();
     await expect(page.locator('input[type="range"]').first()).toBeVisible();
-  });
-
-  test("the reduce-motion toggle persists across a reload", async ({ page }) => {
-    await page.goto("/");
-    const toggle = page.getByRole("button", { name: "Reduce motion" });
-    await expect(toggle).toHaveAttribute("aria-pressed", "false");
-
-    await toggle.click();
-    await expect(toggle).toHaveAttribute("aria-pressed", "true");
-    await expect(page.locator("html")).toHaveAttribute("data-reduce-motion", "true");
-
-    await page.reload();
-    await expect(page.getByRole("button", { name: "Reduce motion" })).toHaveAttribute("aria-pressed", "true");
-    await expect(page.locator("html")).toHaveAttribute("data-reduce-motion", "true");
   });
 });

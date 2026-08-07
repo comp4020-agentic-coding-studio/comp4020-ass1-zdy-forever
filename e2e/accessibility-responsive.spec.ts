@@ -1,16 +1,10 @@
 import { expect, test } from "@playwright/test";
 
+test.beforeEach(async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem("camera-school-tutorial-complete", "true"));
+});
+
 test.describe("reduced motion", () => {
-  test("the on-page toggle sets the reduced-motion data attribute", async ({ page }) => {
-    await page.goto("/");
-    const toggle = page.getByRole("button", { name: "Reduce motion" });
-    await expect(page.locator("html")).not.toHaveAttribute("data-reduce-motion", "true");
-
-    await toggle.click();
-    await expect(page.locator("html")).toHaveAttribute("data-reduce-motion", "true");
-    await expect(toggle).toHaveAttribute("aria-pressed", "true");
-  });
-
   test("honours the OS-level prefers-reduced-motion setting", async ({ page }) => {
     // No element declares a transition/animation of its own — the app's only
     // motion-related rule is the `@media (prefers-reduced-motion: reduce) *`
@@ -28,8 +22,6 @@ test.describe("reduced motion", () => {
 test.describe("keyboard-only navigation", () => {
   test("tabbing reaches the scene selector then the camera controls in order", async ({ page }) => {
     await page.goto("/");
-    await page.keyboard.press("Tab"); // Home link
-    await page.keyboard.press("Tab"); // Reduce motion toggle
     await page.keyboard.press("Tab"); // first (checked) scene radio
 
     await expect(page.getByRole("radio", { name: /^Portrait/ })).toBeFocused();
@@ -48,12 +40,11 @@ test.describe("keyboard-only navigation", () => {
 
   test("a keyboard-focused control shows a visible focus outline", async ({ page }) => {
     await page.goto("/");
-    await page.keyboard.press("Tab"); // Home link
-    await page.keyboard.press("Tab"); // Reduce motion toggle
-    const toggle = page.getByRole("button", { name: "Reduce motion" });
-    await expect(toggle).toBeFocused();
+    await page.keyboard.press("Tab"); // first (checked) scene radio
+    const firstScene = page.getByRole("radio", { name: /^Portrait/ });
+    await expect(firstScene).toBeFocused();
 
-    const outline = await toggle.evaluate((el) => getComputedStyle(el).outlineStyle);
+    const outline = await firstScene.evaluate((el) => getComputedStyle(el).outlineStyle);
     expect(outline).not.toBe("none");
   });
 });

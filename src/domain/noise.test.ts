@@ -144,4 +144,11 @@ describe("applyNoise", () => {
       expect(result.data[i + 3]).toBe(255);
     }
   });
+
+  it("processes a full 720×480 frame without blocking for a second", () => {
+    const image = solidImage(720, 480, 80);
+    const startedAt = performance.now();
+    applyNoise(image, { strength: 0.8, seed: 42 });
+    expect(performance.now() - startedAt).toBeLessThan(1000);
+  });
 });

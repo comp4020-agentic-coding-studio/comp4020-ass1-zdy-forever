@@ -52,9 +52,10 @@ export type NoiseOptions = {
   seed: number;
 };
 
-// Applies luminance + chroma noise, stronger in shadows than highlights (as
-// real sensor noise is), plus a slight desaturation/contrast reduction at
-// extreme strength standing in for reduced dynamic range at very high ISO.
+// Applies fine, mostly luminance sensor grain. A triangular distribution
+// keeps most pixels close to their original value (unlike harsh uniform TV
+// static), chroma variation stays subtle, and highlights remain cleaner than
+// shadows. Extreme ISO also loses a small amount of colour saturation.
 export function applyNoise(image: PixelImage, options: NoiseOptions): PixelImage {
   const { width, height, data } = image;
   const output = new Uint8ClampedArray(data.length);
@@ -65,9 +66,8 @@ export function applyNoise(image: PixelImage, options: NoiseOptions): PixelImage
     return { width, height, data: output };
   }
 
-  const luminanceRandom = mulberry32(options.seed);
-  const chromaRandom = mulberry32(options.seed ^ 0x9e3779b9);
-  const desaturation = strength > 0.7 ? (strength - 0.7) / 0.3 : 0;
+  const sensorRandom = mulberry32(options.seed);
+  const desaturation = strength > 0.85 ? (strength - 0.85) / 0.15 : 0;
   const midGrey = 128;
 
   for (let i = 0; i < width * height; i++) {
@@ -77,21 +77,25 @@ export function applyNoise(image: PixelImage, options: NoiseOptions): PixelImage
     const b = data[offset + 2];
 
     const luminance = (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255;
-    const shadowWeight = 1 - luminance * 0.7;
-    const amplitude = strength * shadowWeight * 40;
+    const shadowWeight = 0.3 + (1 - luminance) ** 1.5 * 0.7;
+    const amplitude = strength * shadowWeight * 18;
 
-    const lumaNoise = (luminanceRandom() * 2 - 1) * amplitude;
-    const chromaNoiseR = (chromaRandom() * 2 - 1) * amplitude * 0.5;
-    const chromaNoiseG = (chromaRandom() * 2 - 1) * amplitude * 0.5;
-    const chromaNoiseB = (chromaRandom() * 2 - 1) * amplitude * 0.5;
+    // Two samples serve both luma and chroma. This is cheaper than generating
+    // independent RGB noise and the opposing colour shifts better resemble a
+    // sensor's fine chroma grain.
+    const sampleA = sensorRandom();
+    const sampleB = sensorRandom();
+    const lumaNoise = (sampleA + sampleB - 1) * amplitude;
+    const redBlueShift = (sampleA - sampleB) * amplitude * 0.18;
+    const greenShift = ((sampleA * 0.37 + sampleB * 0.63) - 0.5) * amplitude * 0.08;
 
     const desaturatedR = r + (midGrey - r) * desaturation * 0.3;
     const desaturatedG = g + (midGrey - g) * desaturation * 0.3;
     const desaturatedB = b + (midGrey - b) * desaturation * 0.3;
 
-    output[offset] = desaturatedR + lumaNoise + chromaNoiseR;
-    output[offset + 1] = desaturatedG + lumaNoise + chromaNoiseG;
-    output[offset + 2] = desaturatedB + lumaNoise + chromaNoiseB;
+    output[offset] = desaturatedR + lumaNoise + redBlueShift;
+    output[offset + 1] = desaturatedG + lumaNoise + greenShift;
+    output[offset + 2] = desaturatedB + lumaNoise - redBlueShift;
     output[offset + 3] = data[offset + 3];
   }
 

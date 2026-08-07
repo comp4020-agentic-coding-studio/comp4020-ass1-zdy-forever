@@ -1,6 +1,7 @@
 import { expect, test } from "@playwright/test";
 
 test.beforeEach(async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem("camera-school-tutorial-complete", "true"));
   await page.goto("/");
   // The save button is disabled until the first processed frame is ready.
   await expect(page.getByRole("button", { name: /^Save to album/ })).toBeEnabled();

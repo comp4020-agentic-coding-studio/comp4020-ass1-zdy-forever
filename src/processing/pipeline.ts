@@ -181,6 +181,7 @@ export type PipelineInput = {
   handheldThreshold?: number;
   settings: CameraSettings;
   baseSettings: CameraSettings;
+  effectBaseSettings?: CameraSettings;
   sceneId: string;
 };
 
@@ -196,9 +197,10 @@ export type PipelineInput = {
 // slider drag reuse it instead of re-blurring the whole frame each time.
 export function runPipeline(input: PipelineInput): PixelImage {
   let image = input.source;
+  const effectBaseSettings = input.effectBaseSettings ?? input.baseSettings;
 
   if (input.depthMap || input.subjectMask) {
-    const wideningStops = apertureWideningStops(input.settings.aperture, input.baseSettings.aperture);
+    const wideningStops = apertureWideningStops(input.settings.aperture, effectBaseSettings.aperture);
     const pyramid = getBlurPyramid(input.sceneId, input.source);
     image = applyDepthOfFieldStage(input.source, {
       depthMap: input.depthMap,
@@ -212,13 +214,13 @@ export function runPipeline(input: PipelineInput): PixelImage {
   const stops = calculateStops(input.settings, input.baseSettings);
   image = applyExposureStage(image, stops.totalStops);
 
-  const noiseAmount = noiseStrength(noiseStopsAboveBase(input.settings.iso, input.baseSettings.iso));
+  const noiseAmount = noiseStrength(noiseStopsAboveBase(input.settings.iso, effectBaseSettings.iso));
   if (noiseAmount > 0) {
     const seed = hashSeed(input.sceneId, input.settings.iso);
     image = applyNoise(image, { strength: noiseAmount, seed });
   }
 
-  const slownessStops = shutterSlownessStops(input.settings.shutterSeconds, input.baseSettings.shutterSeconds);
+  const slownessStops = shutterSlownessStops(input.settings.shutterSeconds, effectBaseSettings.shutterSeconds);
   const motionStrength = subjectMotionBlurStrength(slownessStops);
   const kernelLengthPx = motionBlurKernelLength(motionStrength);
   const shakeStrength = input.handheldThreshold
