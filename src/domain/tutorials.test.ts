@@ -14,4 +14,10 @@ describe("TUTORIALS standard answers", () => {
       expect(unacceptableQualityKeys(assessment, lesson.qualityTargets), `${lesson.id} answer misses a quality goal`).toEqual([]);
     }
   });
+
+  it("keeps the cyclist sharp at the 1/125s standard answer", () => {
+    const lesson = TUTORIALS.find((item) => item.id === "tutorial-two-dials")!;
+    const assessment = assessSettings({ settings: lesson.answerSettings!, scene: lesson });
+    expect(assessment.motionBlur).toBe("frozen");
+  });
 });

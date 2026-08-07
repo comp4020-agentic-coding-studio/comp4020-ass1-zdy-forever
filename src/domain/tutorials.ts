@@ -81,7 +81,9 @@ export const TUTORIALS: readonly TutorialDefinition[] = [
     motionVector: { x: 1, y: 0 },
     baseSettings: { iso: 800, aperture: 4, shutterSeconds: 1 / 125 },
     answerSettings: { iso: 800, aperture: 4, shutterSeconds: 1 / 125 },
-    effectBaseSettings: { iso: 400, aperture: 4, shutterSeconds: 1 / 500 },
+    // At this moderate riding speed, 1/125s is treated as a clean result.
+    // Only slower shutters introduce visible subject movement.
+    effectBaseSettings: { iso: 400, aperture: 4, shutterSeconds: 1 / 125 },
     qualityTargets: {
       noise: ["minimal", "low", "moderate"],
       motionBlur: ["frozen", "slight", "visible"],

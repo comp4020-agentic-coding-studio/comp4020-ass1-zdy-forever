@@ -102,7 +102,11 @@ describe("GuidedTutorial", () => {
 
   it("does not pass a balanced exposure with unacceptable image quality", async () => {
     const user = userEvent.setup();
-    render(<GuidedTutorial lesson={TUTORIALS[3]} lessonIndex={3} onContinue={vi.fn()} />);
+    const strictMotionLesson = {
+      ...TUTORIALS[3],
+      qualityTargets: { ...TUTORIALS[3].qualityTargets, motionBlur: ["frozen"] as const },
+    };
+    render(<GuidedTutorial lesson={strictMotionLesson} lessonIndex={3} onContinue={vi.fn()} />);
     await waitFor(() => expect(screen.queryByText("Rendering…")).not.toBeInTheDocument());
 
     await user.click(screen.getByRole("button", { name: "Increase ISO" }));
