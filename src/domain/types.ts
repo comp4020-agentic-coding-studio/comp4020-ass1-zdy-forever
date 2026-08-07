@@ -21,7 +21,6 @@ export type SceneDefinition = {
   effectBaseSettings?: CameraSettings;
   answerSettings?: CameraSettings;
   qualityTargets?: QualityTargets;
-  handheldThreshold?: number;
 };
 
 export type ExposureLevel = "very-dark" | "dark" | "balanced" | "bright" | "clipped";

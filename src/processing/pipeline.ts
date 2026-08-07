@@ -1,7 +1,7 @@
 import { applyExposureToLinear, calculateStops, clamp01, linearToSrgb, srgbToLinear } from "../domain/exposure";
 import { apertureWideningStops, blurStrength, BLUR_LEVELS_PX, depthDistanceFromFocus } from "../domain/depthOfField";
 import { applyNoise, hashSeed, noiseStopsAboveBase, noiseStrength } from "../domain/noise";
-import { handheldShakeStrength, motionBlurKernelLength, shutterSlownessStops, subjectMotionBlurStrength } from "../domain/motion";
+import { motionBlurKernelLength, shutterSlownessStops, subjectMotionBlurStrength } from "../domain/motion";
 import type { CameraSettings } from "../domain/types";
 import type { PixelImage } from "../domain/types";
 import { boxBlur, readMaskValue } from "./blur";
@@ -85,7 +85,6 @@ export type MotionBlurInput = {
   motionMask?: PixelImage;
   motionVector?: { x: number; y: number };
   kernelLengthPx: number;
-  handheldShakeStrength: number;
 };
 
 function normalizeVector(vector: { x: number; y: number }): { x: number; y: number } {
@@ -124,25 +123,30 @@ function applyDirectionalMotionBlur(
       let g = 0;
       let b = 0;
       let a = 0;
-      let count = 0;
+      let weightTotal = 0;
 
       for (let k = -halfKernel; k <= halfKernel; k++) {
         const sx = Math.round(x + direction.x * k);
         const sy = Math.round(y + direction.y * k);
         if (sx < 0 || sx >= width || sy < 0 || sy >= height) continue;
 
+        // Never pull static-background pixels into a moving subject. This
+        // prevents the pale "double image" produced at mask boundaries.
+        const sampleWeight = readMaskValue(mask, sx, sy);
+        if (sampleWeight <= 0.02) continue;
+
         const sampleOffset = (sy * width + sx) * 4;
-        r += data[sampleOffset];
-        g += data[sampleOffset + 1];
-        b += data[sampleOffset + 2];
-        a += data[sampleOffset + 3];
-        count++;
+        r += data[sampleOffset] * sampleWeight;
+        g += data[sampleOffset + 1] * sampleWeight;
+        b += data[sampleOffset + 2] * sampleWeight;
+        a += data[sampleOffset + 3] * sampleWeight;
+        weightTotal += sampleWeight;
       }
 
-      const blurredR = count ? r / count : data[offset];
-      const blurredG = count ? g / count : data[offset + 1];
-      const blurredB = count ? b / count : data[offset + 2];
-      const blurredA = count ? a / count : data[offset + 3];
+      const blurredR = weightTotal ? r / weightTotal : data[offset];
+      const blurredG = weightTotal ? g / weightTotal : data[offset + 1];
+      const blurredB = weightTotal ? b / weightTotal : data[offset + 2];
+      const blurredA = weightTotal ? a / weightTotal : data[offset + 3];
 
       output[offset] = data[offset] + (blurredR - data[offset]) * maskValue;
       output[offset + 1] = data[offset + 1] + (blurredG - data[offset + 1]) * maskValue;
@@ -154,18 +158,13 @@ function applyDirectionalMotionBlur(
   return { width, height, data: output };
 }
 
-// Directional motion-mask blur, plus a subtle whole-frame handheld-shake
-// blur once the shutter drops below the scene's safe handheld speed.
+// Directional blur is confined to the moving subject. The simulator assumes
+// a stable camera, so a slow shutter never smears stationary scenery.
 export function applyMotionBlurStage(image: PixelImage, input: MotionBlurInput): PixelImage {
   let result = image;
 
   if (input.motionMask && input.motionVector && input.kernelLengthPx > 0) {
     result = applyDirectionalMotionBlur(result, input.motionMask, input.motionVector, input.kernelLengthPx);
-  }
-
-  const shakeRadius = Math.round(clamp01(input.handheldShakeStrength) * 4);
-  if (shakeRadius > 0) {
-    result = boxBlur(result, shakeRadius);
   }
 
   return result;
@@ -178,7 +177,6 @@ export type PipelineInput = {
   motionMask?: PixelImage;
   motionVector?: { x: number; y: number };
   focusDepth?: number;
-  handheldThreshold?: number;
   settings: CameraSettings;
   baseSettings: CameraSettings;
   effectBaseSettings?: CameraSettings;
@@ -223,15 +221,10 @@ export function runPipeline(input: PipelineInput): PixelImage {
   const slownessStops = shutterSlownessStops(input.settings.shutterSeconds, effectBaseSettings.shutterSeconds);
   const motionStrength = subjectMotionBlurStrength(slownessStops);
   const kernelLengthPx = motionBlurKernelLength(motionStrength);
-  const shakeStrength = input.handheldThreshold
-    ? handheldShakeStrength(input.settings.shutterSeconds, input.handheldThreshold)
-    : 0;
-
   image = applyMotionBlurStage(image, {
     motionMask: input.motionMask,
     motionVector: input.motionVector,
     kernelLengthPx,
-    handheldShakeStrength: shakeStrength,
   });
 
   return image;

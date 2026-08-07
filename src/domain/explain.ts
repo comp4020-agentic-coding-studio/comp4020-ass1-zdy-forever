@@ -26,14 +26,15 @@ export function assessSettings({ settings, scene }: AssessmentContext): Assessme
   const depthOfField = classifyDepthOfField(dofStrength);
 
   const slownessStops = shutterSlownessStops(settings.shutterSeconds, effectBaseSettings.shutterSeconds);
-  const motionStrength = subjectMotionBlurStrength(slownessStops);
+  const hasMovingSubject = Boolean(scene.motionMask && scene.motionVector);
+  const motionStrength = hasMovingSubject ? subjectMotionBlurStrength(slownessStops) : 0;
   const motionBlur = classifyMotionBlur(motionStrength);
 
   const messages = [
     exposureMessage(settings, stops.totalStops, exposure),
     isoMessage(settings, effectBaseSettings, noise),
     apertureMessage(settings, effectBaseSettings, depthOfField),
-    shutterMessage(settings, effectBaseSettings, motionBlur),
+    shutterMessage(settings, effectBaseSettings, motionBlur, hasMovingSubject),
   ];
 
   return { exposure, noise, depthOfField, motionBlur, messages };
@@ -82,12 +83,19 @@ function shutterMessage(
   settings: CameraSettings,
   effectBaseSettings: CameraSettings,
   motionBlur: Assessment["motionBlur"],
+  hasMovingSubject: boolean,
 ): string {
   if (settings.shutterSeconds === effectBaseSettings.shutterSeconds) {
     return `${formatShutter(settings.shutterSeconds)} matches this scene's baseline shutter speed.`;
   }
   if (settings.shutterSeconds > effectBaseSettings.shutterSeconds) {
+    if (!hasMovingSubject) {
+      return `Slowing the shutter to ${formatShutter(settings.shutterSeconds)} gathers more light; the simulated camera stays stable, so stationary objects remain sharp.`;
+    }
     return `Slowing the shutter to ${formatShutter(settings.shutterSeconds)} lets in more light, but motion blur becomes ${motionBlur} on the moving parts of the scene.`;
+  }
+  if (!hasMovingSubject) {
+    return `A faster shutter of ${formatShutter(settings.shutterSeconds)} lets in less light; stationary objects remain sharp.`;
   }
   return `A faster shutter of ${formatShutter(settings.shutterSeconds)} keeps motion blur ${motionBlur}, but lets in less light overall.`;
 }

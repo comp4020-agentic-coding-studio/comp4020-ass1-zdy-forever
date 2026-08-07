@@ -1,9 +1,15 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="720" height="480" viewBox="0 0 720 480">
   <defs>
     <filter id="feather" x="-50%" y="-50%" width="200%" height="200%">
-      <feGaussianBlur stdDeviation="10"/>
+      <feGaussianBlur stdDeviation="4"/>
     </filter>
   </defs>
   <rect width="720" height="480" fill="#000"/>
-  <ellipse cx="427" cy="270" rx="86" ry="130" fill="#fff" filter="url(#feather)"/>
+  <g fill="#fff" stroke="#fff" stroke-linecap="round" stroke-linejoin="round" filter="url(#feather)">
+    <circle cx="402" cy="164" r="17" stroke="none"/>
+    <path d="M392 182 L423 183 L444 251 L408 275 L380 223 Z" stroke="none"/>
+    <path d="M392 202 L361 225 M422 202 L457 231" stroke-width="15" fill="none"/>
+    <path d="M414 266 L381 326 L363 365 M429 258 L460 309 L497 349" stroke-width="25" fill="none"/>
+    <path d="M350 367 L378 367 M489 354 L509 362" stroke-width="13" fill="none"/>
+  </g>
 </svg>

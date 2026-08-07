@@ -9,7 +9,6 @@ const scene: SceneDefinition = {
   sourceImage: "/scenes/test/source.png",
   baseSettings: { iso: 100, aperture: 4, shutterSeconds: 1 / 125 },
   focusDepth: 0.3,
-  handheldThreshold: 60,
 };
 
 describe("assessSettings", () => {
@@ -39,11 +38,18 @@ describe("assessSettings", () => {
   });
 
   it("increases motion blur when shutter slows down", () => {
+    const movingScene = { ...scene, motionMask: "/motion.svg", motionVector: { x: 1, y: 0 } };
     const assessment = assessSettings({
       settings: { ...scene.baseSettings, shutterSeconds: 1 },
-      scene,
+      scene: movingScene,
     });
     expect(["visible", "strong", "extreme"]).toContain(assessment.motionBlur);
+  });
+
+  it("keeps stationary scenes free of motion blur at slow shutter speeds", () => {
+    const assessment = assessSettings({ settings: { ...scene.baseSettings, shutterSeconds: 1 }, scene });
+    expect(assessment.motionBlur).toBe("frozen");
+    expect(assessment.messages).toContainEqual(expect.stringContaining("stationary objects remain sharp"));
   });
 
   it("produces exactly four concrete, non-empty explanation messages", () => {

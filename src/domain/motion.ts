@@ -8,25 +8,17 @@ export function shutterSlownessStops(shutterSeconds: number, baseShutterSeconds:
 }
 
 // 0..1 strength of directional blur applied to the motion-masked region.
-// Reaches full strength five stops slower than the scene's baseline.
+// Reaches full strength five stops slower than the scene's baseline. This is
+// also the semantic strength used by the lesson's quality assessment.
 export function subjectMotionBlurStrength(slownessStops: number): number {
   return clamp01(Math.max(0, slownessStops) / 5);
 }
 
-// Subtle whole-frame shake only appears once the shutter drops below the
-// scene's handheld-safe threshold (expressed the same way a photographer
-// states it — "1/60s and slower starts to show shake").
-export function handheldShakeStrength(shutterSeconds: number, handheldThreshold: number): number {
-  const thresholdSeconds = 1 / handheldThreshold;
-  if (shutterSeconds <= thresholdSeconds) return 0;
-  const stopsBelowThreshold = Math.log2(shutterSeconds / thresholdSeconds);
-  return clamp01(stopsBelowThreshold / 3);
-}
-
-// Directional-blur kernel length in pixels, scaling with strength up to a
-// capped maximum so the effect never runs away at extreme shutter speeds.
-export function motionBlurKernelLength(strength: number, maxLengthPx = 32): number {
-  return Math.round(clamp01(strength) * maxLengthPx);
+// Render strength uses a gentler ease-in than the semantic assessment: an
+// ordinary action shutter gets a short, natural smear while truly slow
+// shutters can still demonstrate obvious motion blur.
+export function motionBlurKernelLength(strength: number, maxLengthPx = 18): number {
+  return Math.round(Math.pow(clamp01(strength), 1.5) * maxLengthPx);
 }
 
 export function classifyMotionBlur(strength: number): MotionBlurLevel {

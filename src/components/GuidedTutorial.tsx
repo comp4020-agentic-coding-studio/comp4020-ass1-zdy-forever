@@ -66,7 +66,6 @@ export function GuidedTutorial({
       motionMask: currentAssets.motionMask,
       motionVector: lesson.motionVector,
       focusDepth: lesson.focusDepth,
-      handheldThreshold: lesson.handheldThreshold,
       settings: camera.settings,
       baseSettings: lesson.baseSettings,
       effectBaseSettings: lesson.effectBaseSettings,

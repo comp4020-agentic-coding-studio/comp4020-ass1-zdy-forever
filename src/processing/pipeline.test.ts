@@ -238,7 +238,6 @@ describe("applyMotionBlurStage", () => {
       motionMask,
       motionVector: { x: 1, y: 0 },
       kernelLengthPx: 12,
-      handheldShakeStrength: 0,
     });
 
     for (let y = 0; y < 8; y++) {
@@ -259,13 +258,11 @@ describe("applyMotionBlurStage", () => {
       motionMask,
       motionVector: { x: 1, y: 0 },
       kernelLengthPx: 2,
-      handheldShakeStrength: 0,
     });
     const slowShutter = applyMotionBlurStage(image, {
       motionMask,
       motionVector: { x: 1, y: 0 },
       kernelLengthPx: 20,
-      handheldShakeStrength: 0,
     });
 
     expect(variance(redChannelValues(slowShutter))).toBeLessThan(variance(redChannelValues(fastShutter)));
@@ -278,7 +275,6 @@ describe("applyMotionBlurStage", () => {
       motionMask,
       motionVector: { x: 1, y: 0 },
       kernelLengthPx: 30,
-      handheldShakeStrength: 1,
     });
     for (const value of result.data) {
       expect(value).toBeGreaterThanOrEqual(0);
@@ -295,7 +291,6 @@ describe("runPipeline — full stack", () => {
       source,
       depthMap,
       focusDepth: 0.2,
-      handheldThreshold: 60,
       settings: { iso: 6400, aperture: 1.4, shutterSeconds: 2 },
       baseSettings: BASE_SETTINGS,
       sceneId: "night",

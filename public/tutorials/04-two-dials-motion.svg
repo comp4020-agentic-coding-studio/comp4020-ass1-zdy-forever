@@ -1,5 +1,13 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="720" height="480" viewBox="0 0 720 480">
-  <defs><filter id="soft"><feGaussianBlur stdDeviation="10"/></filter></defs>
+  <defs><filter id="soft"><feGaussianBlur stdDeviation="4"/></filter></defs>
   <rect width="720" height="480" fill="#000"/>
-  <ellipse cx="437" cy="285" rx="116" ry="108" fill="#fff" filter="url(#soft)"/>
+  <g fill="#fff" stroke="#fff" stroke-linecap="round" stroke-linejoin="round" filter="url(#soft)">
+    <circle cx="432" cy="203" r="17" stroke="none"/>
+    <path d="M416 220 L449 216 L463 270 L428 286 L400 250 Z" stroke="none"/>
+    <path d="M441 232 L477 258 L498 265 M412 240 L449 267" stroke-width="13" fill="none"/>
+    <path d="M440 278 L477 315 M432 278 L403 322" stroke-width="18" fill="none"/>
+    <circle cx="390" cy="333" r="39" fill="none" stroke-width="9"/>
+    <circle cx="490" cy="333" r="39" fill="none" stroke-width="9"/>
+    <path d="M390 333 L430 287 L472 333 L417 333 L451 300 L490 333" stroke-width="8" fill="none"/>
+  </g>
 </svg>

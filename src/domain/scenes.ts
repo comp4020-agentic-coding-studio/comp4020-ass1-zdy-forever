@@ -20,7 +20,6 @@ export const SCENES: readonly SceneDefinition[] = [
       depthOfField: ["shallow", "very-shallow"],
       motionBlur: ["frozen", "slight"],
     },
-    handheldThreshold: 60,
   },
   {
     id: "motion",
@@ -36,7 +35,6 @@ export const SCENES: readonly SceneDefinition[] = [
       noise: ["minimal", "low", "moderate"],
       motionBlur: ["frozen", "slight"],
     },
-    handheldThreshold: 250,
   },
   {
     id: "night",
@@ -52,7 +50,6 @@ export const SCENES: readonly SceneDefinition[] = [
       noise: ["minimal", "low", "moderate"],
       motionBlur: ["frozen", "slight", "visible"],
     },
-    handheldThreshold: 30,
   },
   {
     id: "landscape",
@@ -68,7 +65,6 @@ export const SCENES: readonly SceneDefinition[] = [
       depthOfField: ["very-deep", "deep"],
       motionBlur: ["frozen", "slight"],
     },
-    handheldThreshold: 60,
   },
 ];
 

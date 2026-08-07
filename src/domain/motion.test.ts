@@ -1,7 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
   classifyMotionBlur,
-  handheldShakeStrength,
   motionBlurKernelLength,
   shutterSlownessStops,
   subjectMotionBlurStrength,
@@ -36,35 +35,22 @@ describe("subjectMotionBlurStrength", () => {
   });
 });
 
-describe("handheldShakeStrength", () => {
-  it("is zero at or faster than the handheld threshold", () => {
-    expect(handheldShakeStrength(1 / 60, 60)).toBe(0);
-    expect(handheldShakeStrength(1 / 125, 60)).toBe(0);
-  });
-
-  it("grows once the shutter drops below the threshold", () => {
-    expect(handheldShakeStrength(1 / 15, 60)).toBeGreaterThan(0);
-  });
-
-  it("increases as the shutter gets even slower", () => {
-    const moderate = handheldShakeStrength(1 / 15, 60);
-    const slower = handheldShakeStrength(1 / 4, 60);
-    expect(slower).toBeGreaterThan(moderate);
-  });
-});
-
 describe("motionBlurKernelLength", () => {
   it("is zero at zero strength", () => {
     expect(motionBlurKernelLength(0)).toBe(0);
   });
 
   it("reaches the max length at full strength", () => {
-    expect(motionBlurKernelLength(1, 32)).toBe(32);
+    expect(motionBlurKernelLength(1, 18)).toBe(18);
+  });
+
+  it("eases in gently at moderate semantic strength", () => {
+    expect(motionBlurKernelLength(0.4, 18)).toBeLessThan(8);
   });
 
   it("clamps out-of-range strength", () => {
-    expect(motionBlurKernelLength(2, 32)).toBe(32);
-    expect(motionBlurKernelLength(-1, 32)).toBe(0);
+    expect(motionBlurKernelLength(2, 18)).toBe(18);
+    expect(motionBlurKernelLength(-1, 18)).toBe(0);
   });
 });
 

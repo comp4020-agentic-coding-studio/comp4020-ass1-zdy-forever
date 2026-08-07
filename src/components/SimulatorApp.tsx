@@ -42,7 +42,6 @@ export function SimulatorApp() {
       motionMask: currentAssets.motionMask,
       motionVector: scene.motionVector,
       focusDepth: scene.focusDepth,
-      handheldThreshold: scene.handheldThreshold,
       settings: camera.settings,
       baseSettings: scene.baseSettings,
       sceneId: scene.id,
