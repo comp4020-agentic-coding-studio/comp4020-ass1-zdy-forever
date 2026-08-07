@@ -24,21 +24,3 @@ export function loadPixelImage(url: string): Promise<PixelImage> {
     image.src = url;
   });
 }
-
-// Encodes a processed pixel buffer back into a PNG blob for saving to the
-// album — the inverse of loadPixelImage, going through the same canvas seam.
-export function pixelImageToBlob(image: PixelImage): Promise<Blob> {
-  const canvas = document.createElement("canvas");
-  canvas.width = image.width;
-  canvas.height = image.height;
-  const context = canvas.getContext("2d");
-  if (!context) return Promise.reject(new Error("2D canvas context unavailable"));
-  const imageData = new ImageData(new Uint8ClampedArray(image.data), image.width, image.height);
-  context.putImageData(imageData, 0, 0);
-  return new Promise((resolve, reject) => {
-    canvas.toBlob((blob) => {
-      if (blob) resolve(blob);
-      else reject(new Error("Failed to encode image blob"));
-    }, "image/png");
-  });
-}

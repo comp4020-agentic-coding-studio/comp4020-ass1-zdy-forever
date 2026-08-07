@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import { cleanup, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import type { PixelImage } from "../domain/types";
 import { SimulatorApp } from "./SimulatorApp";
 
@@ -11,21 +11,7 @@ vi.mock("../browser/loadPixelImage", () => ({
     height: 4,
     data: new Uint8ClampedArray(4 * 4 * 4).fill(128),
   })),
-  pixelImageToBlob: vi.fn(async () => new Blob(["fake"], { type: "image/png" })),
 }));
-
-let objectUrlCounter = 0;
-
-beforeEach(() => {
-  objectUrlCounter = 0;
-  vi.stubGlobal(
-    "URL",
-    Object.assign(URL, {
-      createObjectURL: vi.fn(() => `blob:mock-${objectUrlCounter++}`),
-      revokeObjectURL: vi.fn(),
-    }),
-  );
-});
 
 afterEach(() => {
   cleanup();
@@ -101,33 +87,6 @@ describe("SimulatorApp", () => {
     expect(screen.getByText("Scene cleared!")).toBeInTheDocument();
   });
 
-  it("saves the current frame to the album and shows the updated count", async () => {
-    const user = userEvent.setup();
-    render(<SimulatorApp />);
-    await waitForFrame();
-
-    const saveButton = screen.getByRole("button", { name: /Save to album/ });
-    expect(saveButton).toHaveTextContent("(0/6)");
-    await user.click(saveButton);
-
-    await waitFor(() => expect(saveButton).toHaveTextContent("(1/6)"));
-    expect(screen.getByText("Saved to album.")).toBeInTheDocument();
-  });
-
-  it("blocks saving past the 6-slot capacity", async () => {
-    const user = userEvent.setup();
-    render(<SimulatorApp />);
-    await waitForFrame();
-
-    const saveButton = screen.getByRole("button", { name: /Save to album/ });
-    for (let i = 0; i < 6; i++) {
-      await user.click(saveButton);
-      await waitFor(() => expect(saveButton).toHaveTextContent(`(${i + 1}/6)`));
-    }
-
-    expect(saveButton).toBeDisabled();
-  });
-
   it("resets settings back to the scene baseline via the reset button", async () => {
     const user = userEvent.setup();
     render(<SimulatorApp />);
@@ -144,38 +103,4 @@ describe("SimulatorApp", () => {
     expect(screen.getByText("ISO 200")).toBeInTheDocument(); // portrait's actual baseline, not the shared minimum
   });
 
-  it("selecting two saved experiments shows the comparison view", async () => {
-    const user = userEvent.setup();
-    render(<SimulatorApp />);
-    await waitForFrame();
-
-    const saveButton = screen.getByRole("button", { name: /Save to album/ });
-    await user.click(saveButton);
-    await waitFor(() => expect(saveButton).toHaveTextContent("(1/6)"));
-
-    await user.click(screen.getByRole("button", { name: "Increase ISO" }));
-    await waitForFrame();
-    await user.click(saveButton);
-    await waitFor(() => expect(saveButton).toHaveTextContent("(2/6)"));
-
-    const thumbnails = screen.getAllByRole("button", { name: /Portrait/ }).filter((button) => button.querySelector("img"));
-    await user.click(thumbnails[0]);
-    await user.click(thumbnails[1]);
-
-    expect(screen.getByRole("heading", { name: "Comparing two experiments" })).toBeInTheDocument();
-  });
-
-  it("removing a saved experiment drops it from the album strip", async () => {
-    const user = userEvent.setup();
-    render(<SimulatorApp />);
-    await waitForFrame();
-
-    const saveButton = screen.getByRole("button", { name: /Save to album/ });
-    await user.click(saveButton);
-    await waitFor(() => expect(saveButton).toHaveTextContent("(1/6)"));
-
-    await user.click(screen.getByRole("button", { name: /Remove/ }));
-    expect(saveButton).toHaveTextContent("(0/6)");
-    expect(screen.getByText(/Save a frame from the simulator/)).toBeInTheDocument();
-  });
 });

@@ -166,12 +166,11 @@ interactive control"); either keep load-bearing structural markup (the `h1`,
 or add real prerendering if the prototype needs the check to see rendered
 React output.
 
-## Assignment 1 rules: Every Setting Costs Something
+## Assignment 1 rules: Exposure Lab
 
 This prototype is a photographic exposure-triangle explainer: pick a scene,
 move ISO/aperture/shutter, watch a real Canvas pixel pipeline (exposure →
-noise → depth-of-field blur → motion blur) render the consequence, save up to
-six results to an album, compare two side by side. Rules specific to this
+noise → depth-of-field blur → motion blur) render the consequence. Rules specific to this
 build, learned or confirmed while building it:
 
 - **Static only.** No backend, no server-side rendering. Everything —
@@ -194,19 +193,13 @@ build, learned or confirmed while building it:
   diagram — there's no per-setting mini-demo bolted on the side. A new
   feature that doesn't route through `src/processing/pipeline.ts` or explain
   itself via `src/domain/explain.ts` is probably scope creep.
-- **Reject scope creep.** The brief specifies four scenes, six album slots,
-  one comparison view. Don't add a fifth scene, a seventh slot, or a second
-  comparison mode because it'd be "nice to have" — extra surface area is
-  extra untested surface area, and the brief already draws the line.
+- **Reject scope creep.** Keep the experience focused on four scenes and the
+  exposure controls. Extra surface area is extra untested surface area.
 - **No pre-rendered-combination cheating.** Every ISO/aperture/shutter
   combination is computed live from the pipeline functions, never looked up
   from a table of pre-rendered images for "the common cases." The
   image-processing tests (`src/processing/*.test.ts`) assert on pixel math,
   not on which asset got swapped in.
-- **Album is capped at exactly six, enforced structurally.** `useAlbum`
-  blocks a 7th save outright rather than silently overwriting the oldest —
-  confirmed both by a unit test and by `e2e/album.spec.ts` clicking Save a
-  7th time and asserting nothing changes.
 - **No stale renders.** `useProcessedFrame`'s request versioning must mean
   the canvas never shows a frame for settings the user has since changed —
   if you drag a slider mid-render, the in-flight result is discarded, not

@@ -1,22 +1,18 @@
 // @vitest-environment jsdom
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { loadPixelImage, pixelImageToBlob } from "./loadPixelImage";
+import { loadPixelImage } from "./loadPixelImage";
 
 afterEach(() => {
   vi.restoreAllMocks();
   vi.unstubAllGlobals();
 });
 
-function stubCanvasContext(behaviour: {
-  getImageData?: (sw: number, sh: number) => ImageData;
-  putImageData?: (data: ImageData, x: number, y: number) => void;
-}) {
+function stubCanvasContext(behaviour: { getImageData?: (sw: number, sh: number) => ImageData }) {
   const context = {
     drawImage: vi.fn(),
     getImageData: vi.fn((_x: number, _y: number, sw: number, sh: number) =>
       behaviour.getImageData ? behaviour.getImageData(sw, sh) : new ImageData(sw, sh),
     ),
-    putImageData: vi.fn(behaviour.putImageData ?? (() => {})),
   };
   vi.spyOn(HTMLCanvasElement.prototype, "getContext").mockReturnValue(context as unknown as CanvasRenderingContext2D);
   return context;
@@ -76,34 +72,5 @@ describe("loadPixelImage", () => {
     vi.spyOn(HTMLCanvasElement.prototype, "getContext").mockReturnValue(null);
     vi.stubGlobal("Image", FakeImage);
     await expect(loadPixelImage("/scenes/portrait/source.png")).rejects.toThrow("2D canvas context unavailable");
-  });
-});
-
-describe("pixelImageToBlob", () => {
-  it("draws the pixel buffer onto a canvas and resolves a blob", async () => {
-    const context = stubCanvasContext({});
-    const fakeBlob = new Blob(["fake"], { type: "image/png" });
-    vi.spyOn(HTMLCanvasElement.prototype, "toBlob").mockImplementation((callback) => callback(fakeBlob));
-
-    const blob = await pixelImageToBlob({ width: 2, height: 2, data: new Uint8ClampedArray(16).fill(50) });
-
-    expect(context.putImageData).toHaveBeenCalled();
-    expect(blob).toBe(fakeBlob);
-  });
-
-  it("rejects when a 2D context is unavailable", async () => {
-    vi.spyOn(HTMLCanvasElement.prototype, "getContext").mockReturnValue(null);
-    await expect(pixelImageToBlob({ width: 1, height: 1, data: new Uint8ClampedArray(4) })).rejects.toThrow(
-      "2D canvas context unavailable",
-    );
-  });
-
-  it("rejects when encoding fails", async () => {
-    stubCanvasContext({});
-    vi.spyOn(HTMLCanvasElement.prototype, "toBlob").mockImplementation((callback) => callback(null));
-
-    await expect(pixelImageToBlob({ width: 1, height: 1, data: new Uint8ClampedArray(4) })).rejects.toThrow(
-      "Failed to encode image blob",
-    );
   });
 });

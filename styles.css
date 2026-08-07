@@ -1094,8 +1094,7 @@ canvas {
 }
 
 .tutorial__actions,
-.challenge-section__header,
-.simulator-app__album-controls {
+.challenge-section__header {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -1383,95 +1382,6 @@ canvas {
 .success-overlay__confetti i:nth-child(11) { --i: 11; }
 .success-overlay__confetti i:nth-child(12) { --i: 12; }
 
-/* Album */
-
-.album-strip__header {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  gap: 1rem;
-}
-
-.album-strip__header h2 {
-  margin-bottom: 0;
-  font-size: 1.5rem;
-}
-
-.album-strip__empty {
-  color: var(--ink-faint);
-}
-
-.album-strip__list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-  padding: 0;
-  list-style: none;
-}
-
-.album-strip__item {
-  display: flex;
-  flex-direction: column;
-  gap: .4rem;
-  width: 9rem;
-}
-
-.album-strip__thumb-button {
-  display: flex;
-  flex-direction: column;
-  gap: .35rem;
-  padding: .35rem;
-  border-radius: 1rem;
-}
-
-.album-strip__thumb-button--selected {
-  border-color: var(--accent);
-  box-shadow: 0 0 0 2px var(--accent-soft);
-}
-
-.album-strip__thumb-button img,
-.album-comparison__frame img {
-  width: 100%;
-  height: auto;
-  border-radius: .7rem;
-}
-
-.album-strip__caption,
-.album-comparison__frame figcaption {
-  color: var(--ink-faint);
-  font-size: .75rem;
-}
-
-.album-strip__remove {
-  align-self: flex-start;
-  min-height: 2rem;
-  padding: .2rem .6rem;
-  font-size: .72rem;
-}
-
-.album-comparison__frames {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-}
-
-.album-comparison__frame {
-  flex: 1 1 14rem;
-  margin: 0;
-  padding: .5rem;
-  border: 1px solid var(--line);
-  border-radius: var(--radius-md);
-  background: var(--surface);
-}
-
-.album-comparison__frame figcaption {
-  margin-top: .35rem;
-}
-
-.album-comparison__sentences {
-  color: var(--ink-soft);
-}
-
 @keyframes page-enter {
   from {
     opacity: 0;
@@ -1739,8 +1649,7 @@ canvas {
   }
 
   .tutorial__actions,
-  .challenge-section__header,
-  .simulator-app__album-controls {
+  .challenge-section__header {
     align-items: stretch;
     flex-direction: column;
   }

@@ -6,14 +6,13 @@ history, not a reconstruction.
 
 ## What I built
 
-**Every Setting Costs Something** is an interactive explainer of the
+**Exposure Lab** is an interactive explainer of the
 photographic exposure triangle. Pick one of four scenes (portrait, moving
 subject, night street, landscape), then move ISO, aperture, and shutter speed
 and watch a real Canvas pixel pipeline — exposure, sensor noise,
 depth-of-field blur, motion blur, in that order — re-render the actual
 consequence of that choice on the scene's image, alongside a live
 exposure-triangle diagram and a plain-language explanation of the trade-off.
-Up to six results can be saved to an album and any two compared side by side.
 The whole thing is a static site: no backend, four procedurally generated
 scene assets, everything computed client-side.
 

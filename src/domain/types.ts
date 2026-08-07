@@ -43,19 +43,6 @@ export type Assessment = {
   messages: string[];
 };
 
-export type AlbumExperiment = {
-  id: string;
-  capturedAt: number;
-  order: number;
-  sceneId: string;
-  sceneTitle: string;
-  settings: CameraSettings;
-  totalExposureStops: number;
-  imageBlob: Blob;
-  imageUrl: string;
-  assessment: Assessment;
-};
-
 // Plain pixel buffer shape, deliberately not `ImageData` itself so the
 // processing pipeline can be unit-tested with tiny synthetic fixtures in
 // Node, with no browser Canvas required. A real ImageData satisfies this

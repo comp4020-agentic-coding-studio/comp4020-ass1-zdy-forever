@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useState } from "react";
-import { pixelImageToBlob } from "../browser/loadPixelImage";
 import { useSceneAssets } from "../browser/useSceneAssets";
 import { calculateStops } from "../domain/exposure";
 import { assessSettings } from "../domain/explain";
@@ -8,11 +7,8 @@ import { DEFAULT_SCENE_ID, SCENES, getScene } from "../domain/scenes";
 import { formatSettings, MINIMUM_SETTINGS } from "../domain/settings";
 import type { PipelineInput } from "../processing/pipeline";
 import { useProcessedFrame } from "../processing/useProcessedFrame";
-import { ALBUM_CAPACITY, useAlbum } from "../state/useAlbum";
 import { useCameraSettings } from "../state/useCameraSettings";
 import { useLevelProgress } from "../state/useLevelProgress";
-import { AlbumComparisonView } from "./AlbumComparisonView";
-import { AlbumStrip } from "./AlbumStrip";
 import { AnswerCard } from "./AnswerCard";
 import { ComparisonSlider } from "./ComparisonSlider";
 import { ControlPanel } from "./ControlPanel";
@@ -29,10 +25,6 @@ export function SimulatorApp() {
   const camera = useCameraSettings(scene.id, MINIMUM_SETTINGS, scene.baseSettings);
   const levelProgress = useLevelProgress(SCENES);
   const [isInteracting, setIsInteracting] = useState(false);
-  const album = useAlbum();
-  const [saveStatus, setSaveStatus] = useState<string | null>(null);
-  const [isSaving, setIsSaving] = useState(false);
-  const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
   // On the render right after a scene switch, `assets` can still report
   // "ready" for the *previous* scene (its own effect hasn't committed yet) —
@@ -69,50 +61,6 @@ export function SimulatorApp() {
   useEffect(() => {
     if (sceneCleared) levelProgress.markCleared(scene.id);
   }, [levelProgress.markCleared, scene.id, sceneCleared]);
-
-  async function handleSave() {
-    if (!processed.image) return;
-    setIsSaving(true);
-    setSaveStatus(null);
-    try {
-      const imageBlob = await pixelImageToBlob(processed.image);
-      const totalExposureStops = calculateStops(camera.settings, scene.baseSettings).totalStops;
-      const saved = album.add({
-        sceneId: scene.id,
-        sceneTitle: scene.title,
-        settings: camera.settings,
-        totalExposureStops,
-        imageBlob,
-        assessment,
-      });
-      setSaveStatus(saved ? "Saved to album." : `Album is full (${ALBUM_CAPACITY} max) — remove one to save another.`);
-    } finally {
-      setIsSaving(false);
-    }
-  }
-
-  function toggleSelect(id: string) {
-    setSelectedIds((previous) => {
-      if (previous.includes(id)) return previous.filter((selectedId) => selectedId !== id);
-      // Only ever compares the two most recently picked experiments — picking
-      // a third swaps out the oldest selection rather than growing unbounded.
-      return previous.length < 2 ? [...previous, id] : [previous[1], id];
-    });
-  }
-
-  function handleRemove(id: string) {
-    album.remove(id);
-    setSelectedIds((previous) => previous.filter((selectedId) => selectedId !== id));
-  }
-
-  function handleClear() {
-    album.clear();
-    setSelectedIds([]);
-  }
-
-  const [firstSelected, secondSelected] = selectedIds
-    .map((id) => album.experiments.find((experiment) => experiment.id === id))
-    .filter((experiment): experiment is NonNullable<typeof experiment> => experiment !== undefined);
 
   return (
     <div className="simulator-app">
@@ -182,23 +130,6 @@ export function SimulatorApp() {
       </div>
 
       <ExplanationPanel assessment={assessment} />
-
-      <div className="simulator-app__album-controls">
-        <button type="button" onClick={handleSave} disabled={!processed.image || album.isFull || isSaving}>
-          {isSaving ? "Saving…" : `Save to album (${album.experiments.length}/${ALBUM_CAPACITY})`}
-        </button>
-        {saveStatus && <p aria-live="polite">{saveStatus}</p>}
-      </div>
-
-      <AlbumStrip
-        experiments={album.experiments}
-        selectedIds={selectedIds}
-        onToggleSelect={toggleSelect}
-        onRemove={handleRemove}
-        onClear={handleClear}
-      />
-
-      {firstSelected && secondSelected && <AlbumComparisonView first={firstSelected} second={secondSelected} />}
     </div>
   );
 }
