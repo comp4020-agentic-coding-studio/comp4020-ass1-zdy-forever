@@ -60,8 +60,8 @@ test("the built site loads correctly when served under a nested path prefix", as
 
     await page.goto(`http://127.0.0.1:${port}${PREFIX}/`);
 
-    await expect(page.locator("h1")).toHaveText("Every Setting Costs Something");
-    await expect(page.getByRole("radio").first()).toBeVisible();
+    await expect(page.locator("h1")).toHaveText("Exposure Lab");
+    await expect(page.getByRole("button", { name: "Start with ISO →" })).toBeVisible();
 
     // The stylesheet actually applied, not just fetched: this custom
     // property only exists in styles.css, so its presence proves the

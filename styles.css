@@ -55,21 +55,54 @@ main {
   padding: 0 1.25rem 5rem;
 }
 
-main > h1 {
+.site-header {
   position: relative;
   z-index: 20;
-  width: fit-content;
-  margin: 0;
-  padding: 1rem 0;
-  font-size: 1.05rem;
-  font-weight: 650;
-  letter-spacing: -0.02em;
+  display: flex;
+  align-items: center;
+  height: 3.5rem;
 }
 
-main > h1::after {
-  content: "Camera School";
-  margin-left: 0.55rem;
+.site-brand {
+  display: flex;
+  align-items: center;
+  gap: .55rem;
+  width: fit-content;
+}
+
+.site-brand__mark {
+  position: relative;
+  display: block;
+  width: 1.45rem;
+  height: 1.45rem;
+  border: 1px solid rgb(255 255 255 / 22%);
+  border-radius: .45rem;
+  background: conic-gradient(from 30deg, #7cc4ff, #147ce5, #0a3478, #63b4ff, #147ce5, #7cc4ff);
+  box-shadow: 0 0 16px rgb(41 151 255 / 22%);
+}
+
+.site-brand__mark::after {
+  content: "";
+  position: absolute;
+  inset: .4rem;
+  border: 1px solid rgb(255 255 255 / 55%);
+  border-radius: 50%;
+  background: #08111f;
+}
+
+.site-brand h1 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 650;
+  letter-spacing: -.025em;
+}
+
+.site-brand__descriptor {
+  margin-left: .1rem;
+  border-left: 1px solid var(--line-strong);
+  padding-left: .65rem;
   color: var(--ink-faint);
+  font-size: .82rem;
   font-weight: 500;
 }
 
@@ -1628,13 +1661,11 @@ canvas {
     padding-inline: .75rem;
   }
 
-  main > h1 {
+  .site-header {
     padding-left: .35rem;
-    font-size: .92rem;
-    white-space: nowrap;
   }
 
-  main > h1::after {
+  .site-brand__descriptor {
     display: none;
   }
 

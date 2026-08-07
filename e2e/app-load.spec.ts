@@ -14,7 +14,8 @@ test.describe("app load", () => {
     page.on("requestfailed", (request) => failedRequests.push(request.url()));
 
     await page.goto("/");
-    await expect(page.locator("h1")).toHaveText("Every Setting Costs Something");
+    await expect(page.locator("h1")).toHaveText("Exposure Lab");
+    await expect(page).toHaveTitle("Exposure Lab — Learn Manual Photography");
 
     expect(consoleErrors, `console errors: ${consoleErrors.join(", ")}`).toEqual([]);
     expect(failedRequests, `failed requests: ${failedRequests.join(", ")}`).toEqual([]);
