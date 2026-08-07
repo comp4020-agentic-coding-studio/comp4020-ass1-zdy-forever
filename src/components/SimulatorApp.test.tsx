@@ -60,6 +60,14 @@ describe("SimulatorApp", () => {
     expect(screen.getByText(/ISO 400: brighter/)).toBeInTheDocument();
   });
 
+  it("keeps the explanation panel beneath the challenge photograph", async () => {
+    render(<SimulatorApp />);
+    await waitForFrame();
+
+    const panel = screen.getByRole("heading", { name: "What's happening" }).closest(".explanation-panel");
+    expect(panel?.parentElement).toHaveClass("camera-workbench__visual");
+  });
+
   it("shows an immediate celebration over the photograph when a scene is balanced", async () => {
     const user = userEvent.setup();
     render(<SimulatorApp />);

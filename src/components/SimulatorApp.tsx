@@ -94,6 +94,7 @@ export function SimulatorApp() {
                 ? `Exposure is balanced, but improve ${qualityIssueLabels(qualityIssues).join(" and ")} to clear the scene.`
                 : "Balance the exposure without sacrificing the image quality this scene needs."}
           </p>
+          <ExplanationPanel assessment={assessment} />
         </div>
 
         <aside className="camera-workbench__controls" aria-label="Camera controls and exposure triangle">
@@ -128,7 +129,6 @@ export function SimulatorApp() {
         </aside>
       </div>
 
-      <ExplanationPanel assessment={assessment} />
     </div>
   );
 }
