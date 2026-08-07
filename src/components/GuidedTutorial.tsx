@@ -131,7 +131,7 @@ export function GuidedTutorial({
         <p className="tutorial__eyebrow">{lesson.stepLabel}</p>
         <h2 id="tutorial-heading">{lesson.lessonTitle}</h2>
         <p className="tutorial__purpose">{lesson.purpose}</p>
-        <TutorialConceptAnimation lessonId={lesson.id} settings={camera.settings} />
+        <TutorialConceptAnimation lessonId={lesson.id} />
         <p className="tutorial__goal"><strong>Your task:</strong> {lesson.goal}</p>
         <details className="tutorial__details">
           <summary>Why this matters</summary>

@@ -9,8 +9,9 @@ afterEach(cleanup);
 describe("TutorialConceptAnimation", () => {
   it("provides a distinct accessible explanation for every lesson", () => {
     const labels = TUTORIALS.map((lesson) => {
-      const { unmount } = render(<TutorialConceptAnimation lessonId={lesson.id} settings={lesson.initialSettings} />);
+      const { unmount } = render(<TutorialConceptAnimation lessonId={lesson.id} />);
       const label = screen.getByRole("img").getAttribute("aria-label");
+      expect(screen.queryByText("Current setting")).not.toBeInTheDocument();
       unmount();
       return label;
     });

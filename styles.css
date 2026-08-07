@@ -809,43 +809,6 @@ legend {
   animation-delay: -.2s;
 }
 
-.concept-current {
-  display: grid;
-  grid-template-columns: auto minmax(4rem, 1fr) auto;
-  align-items: center;
-  gap: .7rem;
-  padding: .7rem 1rem;
-  border-top: 1px solid var(--line);
-  color: var(--ink-faint);
-  font-size: .7rem;
-}
-
-.concept-current strong {
-  color: var(--accent-bright);
-  font-size: .78rem;
-  font-variant-numeric: tabular-nums;
-}
-
-.concept-current__track {
-  position: relative;
-  height: 3px;
-  border-radius: 999px;
-  background: rgb(255 255 255 / 14%);
-}
-
-.concept-current__track i {
-  position: absolute;
-  top: 50%;
-  width: .8rem;
-  height: .8rem;
-  border: 2px solid white;
-  border-radius: 50%;
-  background: var(--accent);
-  box-shadow: 0 0 9px var(--accent);
-  translate: -50% -50%;
-  transition: left 220ms ease;
-}
-
 .concept-equation {
   display: grid;
   grid-template-columns: 1fr auto 1fr auto 1fr;
@@ -2022,9 +1985,7 @@ canvas {
     grid-area: concept;
     display: grid;
     grid-template-columns: minmax(9rem, .8fr) minmax(0, 1.45fr);
-    grid-template-areas:
-      "heading example"
-      "current current";
+    grid-template-areas: "heading example";
     margin-top: 0;
   }
 
@@ -2078,11 +2039,6 @@ canvas {
 
   .concept-three > div:not(.concept-three__result) {
     padding: .4rem .25rem;
-  }
-
-  .concept-current {
-    grid-area: current;
-    padding-block: .48rem;
   }
 
   .tutorial__header .tutorial__goal {
