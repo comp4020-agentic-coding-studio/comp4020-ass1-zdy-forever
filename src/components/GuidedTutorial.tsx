@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useSceneAssets } from "../browser/useSceneAssets";
 import { calculateStops } from "../domain/exposure";
 import { assessSettings } from "../domain/explain";
@@ -62,6 +62,7 @@ export function GuidedTutorial({
   const [isInteracting, setIsInteracting] = useState(false);
   const [completedDuringVisit, setCompletedDuringVisit] = useState(false);
   const [showCelebration, setShowCelebration] = useState(false);
+  const progressRef = useRef<HTMLOListElement>(null);
 
   const currentAssets = assets.status === "ready" && assets.sceneId === lesson.id ? assets.assets : null;
   const pipelineInput = useMemo<PipelineInput | null>(() => {
@@ -97,6 +98,17 @@ export function GuidedTutorial({
     onLessonComplete?.();
   }, [completedDuringVisit, isPreviouslyComplete, meetsCompletionRequirements, onLessonComplete]);
 
+  useEffect(() => {
+    const progress = progressRef.current;
+    const currentStep = progress?.querySelector<HTMLElement>('[data-state="current"]');
+    if (!progress || !currentStep || progress.scrollWidth <= progress.clientWidth) return;
+
+    progress.scrollTo({
+      left: currentStep.offsetLeft - (progress.clientWidth - currentStep.offsetWidth) / 2,
+      behavior: "smooth",
+    });
+  }, [lessonIndex]);
+
   function markTouched(key: SettingKey) {
     if (!lesson.enabledSettings.includes(key)) return;
     setTouchedKeys((previous) => (previous.has(key) ? previous : new Set(previous).add(key)));
@@ -104,7 +116,7 @@ export function GuidedTutorial({
 
   return (
     <section className="tutorial" aria-labelledby="tutorial-heading">
-      <ol className="tutorial__progress" aria-label="Tutorial progress">
+      <ol ref={progressRef} className="tutorial__progress" aria-label="Tutorial progress">
         {TUTORIALS.map((item, index) => {
           const isComplete = completedLessonIds?.has(item.id) ?? (index < lessonIndex || (index === lessonIndex && lessonComplete));
           const isCurrent = index === lessonIndex;

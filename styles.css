@@ -2106,7 +2106,12 @@ canvas {
     display: flex;
     overflow-x: auto;
     padding-bottom: .25rem;
+    overscroll-behavior-inline: contain;
+    scroll-padding-inline: .75rem;
+    scroll-snap-type: inline proximity;
     scrollbar-width: none;
+    touch-action: pan-x;
+    -webkit-overflow-scrolling: touch;
   }
 
   .tutorial__progress::-webkit-scrollbar {
@@ -2115,6 +2120,7 @@ canvas {
 
   .tutorial__progress li {
     flex: 0 0 auto;
+    scroll-snap-align: center;
   }
 
   .tutorial__progress li[data-state="locked"] {
