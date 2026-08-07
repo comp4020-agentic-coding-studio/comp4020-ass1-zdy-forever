@@ -5,7 +5,7 @@ import { calculateStops } from "../domain/exposure";
 import { assessSettings } from "../domain/explain";
 import { qualityIssueLabels, unacceptableQualityKeys } from "../domain/quality";
 import { DEFAULT_SCENE_ID, SCENES, getScene } from "../domain/scenes";
-import { MINIMUM_SETTINGS } from "../domain/settings";
+import { formatSettings, MINIMUM_SETTINGS } from "../domain/settings";
 import type { PipelineInput } from "../processing/pipeline";
 import { useProcessedFrame } from "../processing/useProcessedFrame";
 import { ALBUM_CAPACITY, useAlbum } from "../state/useAlbum";
@@ -132,6 +132,7 @@ export function SimulatorApp() {
               simulated={processed.image ?? currentAssets?.source ?? null}
               isProcessing={assets.status === "loading" || processed.isProcessing}
               label={scene.title}
+              settingsSummary={formatSettings(camera.settings)}
             />
             {sceneCleared && (
               <SuccessOverlay title="Scene cleared!" message="Balanced exposure — the next challenge is unlocked." />

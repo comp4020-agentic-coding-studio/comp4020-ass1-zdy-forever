@@ -3,7 +3,7 @@ import { useSceneAssets } from "../browser/useSceneAssets";
 import { calculateStops } from "../domain/exposure";
 import { assessSettings } from "../domain/explain";
 import { qualityIssueLabels, unacceptableQualityKeys } from "../domain/quality";
-import type { SettingKey } from "../domain/settings";
+import { formatSettings, type SettingKey } from "../domain/settings";
 import { TUTORIALS, type TutorialDefinition } from "../domain/tutorials";
 import type { Assessment } from "../domain/types";
 import type { PipelineInput } from "../processing/pipeline";
@@ -129,6 +129,7 @@ export function GuidedTutorial({
               simulated={processed.image ?? currentAssets?.source ?? null}
               isProcessing={assets.status === "loading" || processed.isProcessing}
               label={`${lesson.title} tutorial`}
+              settingsSummary={formatSettings(camera.settings)}
             />
             {showCelebration && (
               <SuccessOverlay

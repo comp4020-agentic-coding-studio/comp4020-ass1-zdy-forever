@@ -34,6 +34,27 @@ describe("ComparisonSlider", () => {
     const handle = screen.getByRole("slider", { name: "Reveal original vs. simulated" });
     fireEvent.change(handle, { target: { value: "80" } });
     expect(handle).toHaveValue("80");
+    expect(handle).toHaveAttribute("aria-valuetext", "80% original, 20% simulated");
+  });
+
+  it("labels both sides and centres the divider on double-click", () => {
+    const { container } = render(
+      <ComparisonSlider
+        original={makeImage(10)}
+        simulated={makeImage(200)}
+        isProcessing={false}
+        label="Portrait"
+        settingsSummary="ISO 400, f/4, 1/125s"
+      />,
+    );
+    const handle = screen.getByRole("slider", { name: "Reveal original vs. simulated" });
+    fireEvent.change(handle, { target: { value: "76" } });
+    fireEvent.doubleClick(container.querySelector(".comparison-slider")!);
+
+    expect(screen.getByText("Original")).toBeInTheDocument();
+    expect(screen.getByText("Simulated")).toBeInTheDocument();
+    expect(screen.getByText("ISO 400, f/4, 1/125s")).toBeInTheDocument();
+    expect(handle).toHaveValue("50");
   });
 
   it("shows the rendering status only on the simulated layer while processing", () => {
