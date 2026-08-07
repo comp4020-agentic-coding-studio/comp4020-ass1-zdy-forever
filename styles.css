@@ -245,6 +245,36 @@ legend {
   line-height: 1.45;
 }
 
+.opening__scroll-cue {
+  display: flex;
+  align-items: center;
+  gap: .65rem;
+  width: fit-content;
+  margin-top: 2rem;
+  color: var(--ink-faint);
+  font-size: .7rem;
+  font-weight: 650;
+  letter-spacing: .11em;
+  text-transform: uppercase;
+}
+
+.opening__scroll-cue span {
+  position: relative;
+  width: 1.8rem;
+  height: 1px;
+  overflow: hidden;
+  background: var(--line-strong);
+}
+
+.opening__scroll-cue span::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--accent-bright);
+  animation: scroll-cue 2.2s ease-in-out infinite;
+  transform: translateX(-110%);
+}
+
 .opening__principles {
   display: grid;
   gap: .75rem;
@@ -306,6 +336,17 @@ legend {
   margin: 0;
   padding-left: 1.25rem;
   color: var(--ink-soft);
+}
+
+/* Progressive enhancement: supporting browsers tie these entrances directly
+ * to scrolling. Unsupported browsers keep every section fully visible. */
+@supports (animation-timeline: view()) {
+  .opening [data-scroll-reveal] {
+    animation: opening-section-reveal linear both;
+    animation-timeline: view();
+    animation-range: entry 0% entry 100%;
+    will-change: opacity, transform;
+  }
 }
 
 .opening__start,
@@ -1422,6 +1463,26 @@ canvas {
   50% {
     opacity: .72;
     transform: scale(.96);
+  }
+}
+
+@keyframes scroll-cue {
+  45%, 100% {
+    transform: translateX(110%);
+  }
+}
+
+@keyframes opening-section-reveal {
+  from {
+    opacity: .12;
+    filter: blur(7px);
+    transform: translateY(2.5rem) scale(.98);
+  }
+
+  to {
+    opacity: 1;
+    filter: blur(0);
+    transform: translateY(0) scale(1);
   }
 }
 

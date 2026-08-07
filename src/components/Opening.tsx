@@ -12,27 +12,31 @@ export function Opening({ onStart }: OpeningProps) {
           This website is a hands-on camera simulator. You will change real camera settings, compare the result with
           the original photograph, and learn why every brighter image comes with a visual trade-off.
         </p>
+        <div className="opening__scroll-cue" aria-hidden="true">
+          <span />
+          Scroll to explore
+        </div>
       </div>
 
       <div className="opening__principles" aria-label="Camera basics">
-        <article>
+        <article data-scroll-reveal>
           <span className="opening__step-number" aria-hidden="true">01</span>
           <h3>Exposure means brightness</h3>
           <p className="opening__principle-copy">Too little light makes a photograph dark; too much washes out detail. A balanced exposure keeps useful detail.</p>
         </article>
-        <article>
+        <article data-scroll-reveal>
           <span className="opening__step-number" aria-hidden="true">02</span>
           <h3>Three controls share the job</h3>
           <p className="opening__principle-copy">ISO, aperture and shutter speed can all brighten the frame, but they affect noise, focus and motion differently.</p>
         </article>
-        <article>
+        <article data-scroll-reveal>
           <span className="opening__step-number" aria-hidden="true">03</span>
           <h3>There is no free setting</h3>
           <p className="opening__principle-copy">The aim is not one perfect number. It is choosing which trade-off best protects the subject you care about.</p>
         </article>
       </div>
 
-      <div className="opening__how-to">
+      <div className="opening__how-to" data-scroll-reveal>
         <div>
           <h3>How to use the simulator</h3>
           <ol>

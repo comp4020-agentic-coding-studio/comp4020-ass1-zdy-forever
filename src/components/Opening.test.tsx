@@ -8,11 +8,13 @@ afterEach(cleanup);
 
 describe("Opening", () => {
   it("introduces the exposure trade-off", () => {
-    render(<Opening onStart={vi.fn()} />);
+    const { container } = render(<Opening onStart={vi.fn()} />);
     expect(screen.getByRole("heading", { name: "Learn how a camera turns light into a photograph" })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Exposure means brightness" })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Three controls share the job" })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "There is no free setting" })).toBeInTheDocument();
+    expect(container.querySelectorAll("[data-scroll-reveal]")).toHaveLength(4);
+    expect(screen.getByText("Scroll to explore")).toBeInTheDocument();
   });
 
   it("does not repeat the guided learning sequence in the opening", () => {
