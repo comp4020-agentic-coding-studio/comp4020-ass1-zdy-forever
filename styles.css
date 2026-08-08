@@ -274,9 +274,10 @@ legend {
 .opening__intro h2 {
   max-width: 13ch;
   margin: .75rem 0 1.25rem;
+  padding-bottom: .08em;
   font-size: clamp(3rem, 7.2vw, 6.8rem);
   letter-spacing: -.065em;
-  line-height: .94;
+  line-height: 1;
   background: linear-gradient(108deg, #fff 25%, #b5c8ef 58%, #7d91bc 100%);
   background-clip: text;
   color: transparent;

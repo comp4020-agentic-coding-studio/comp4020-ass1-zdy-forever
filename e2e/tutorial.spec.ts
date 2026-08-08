@@ -6,6 +6,23 @@ async function clickTimes(page: Page, name: string, times: number) {
   for (let step = 0; step < times; step++) await button.click();
 }
 
+test("the opening headline leaves room for letter descenders", async ({ page }) => {
+  await page.setViewportSize({ width: 768, height: 900 });
+  await page.goto("/");
+  const heading = page.getByRole("heading", { name: "Learn how a camera turns light into a photograph" });
+  const metrics = await heading.evaluate((element) => {
+    const style = getComputedStyle(element);
+    return {
+      fontSize: Number.parseFloat(style.fontSize),
+      lineHeight: Number.parseFloat(style.lineHeight),
+      paddingBottom: Number.parseFloat(style.paddingBottom),
+    };
+  });
+
+  expect(metrics.lineHeight).toBeGreaterThanOrEqual(metrics.fontSize);
+  expect(metrics.paddingBottom).toBeGreaterThan(0);
+});
+
 test("the guided path progresses from one dial to all three before unlocking challenges", async ({ page }) => {
   await page.goto("/");
   await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
