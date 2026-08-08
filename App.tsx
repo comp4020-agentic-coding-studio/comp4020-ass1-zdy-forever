@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { scrollToPageTop } from "./src/browser/scrollToPageTop";
+import { AwardScreen } from "./src/components/AwardScreen";
 import { GuidedTutorial } from "./src/components/GuidedTutorial";
 import { Opening } from "./src/components/Opening";
 import { SimulatorApp } from "./src/components/SimulatorApp";
@@ -46,6 +47,7 @@ export function App() {
   const [allChallengesComplete, setAllChallengesComplete] = useState(
     () => loadClearedIds(SCENES).size === SCENES.length,
   );
+  const [showAward, setShowAward] = useState(false);
   const tutorialsComplete = lessonIndex >= TUTORIALS.length;
   const challengesUnlocked = completedLessonIds.size === TUTORIALS.length;
   const currentLessonComplete = !tutorialsComplete && completedLessonIds.has(TUTORIALS[lessonIndex].id);
@@ -58,7 +60,7 @@ export function App() {
   useEffect(() => {
     if (showIntroduction) return;
     scrollToPageTop();
-  }, [lessonIndex, showIntroduction]);
+  }, [lessonIndex, showAward, showIntroduction]);
 
   useEffect(() => {
     if (tutorialsComplete) return;
@@ -94,6 +96,7 @@ export function App() {
     } catch {
       // Progress persistence is helpful, but never blocks navigation.
     }
+    setShowAward(false);
     setLessonIndex(TUTORIALS.length);
   }
 
@@ -110,6 +113,7 @@ export function App() {
   }
 
   function reviewTutorials() {
+    setShowAward(false);
     setLessonIndex(0);
     setShowIntroduction(false);
   }
@@ -126,6 +130,8 @@ export function App() {
       )}
       {showIntroduction && !tutorialsComplete ? (
         <Opening onStart={() => setShowIntroduction(false)} />
+      ) : tutorialsComplete && showAward ? (
+        <AwardScreen onReviewChallenges={() => setShowAward(false)} onReviewTutorials={reviewTutorials} />
       ) : tutorialsComplete ? (
         <section className="challenge-section" aria-labelledby="challenge-heading">
           <div className="challenge-section__header">
@@ -138,7 +144,10 @@ export function App() {
             </div>
             <button type="button" onClick={reviewTutorials}>Review tutorials</button>
           </div>
-          <SimulatorApp onAllChallengesCompleteChange={setAllChallengesComplete} />
+          <SimulatorApp
+            onAllChallengesCompleteChange={setAllChallengesComplete}
+            onClaimAward={() => setShowAward(true)}
+          />
         </section>
       ) : (
         <GuidedTutorial

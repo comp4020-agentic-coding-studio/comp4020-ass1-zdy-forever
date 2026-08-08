@@ -75,12 +75,17 @@ test.describe("scenes", () => {
     await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0);
   });
 
-  test("the final challenge keeps a header shortcut for reviewing the sequence", async ({ page }) => {
+  test("the final challenge offers an award screen with both review paths", async ({ page }) => {
     await page.getByRole("radio", { name: /^Landscape/ }).click();
-    const reviewChallenges = page.getByRole("button", { name: "Review: Portrait ↻" });
-    await expect(reviewChallenges).toBeVisible();
+    const getAward = page.getByRole("button", { name: "Get award →" });
+    await expect(getAward).toBeVisible();
 
-    await reviewChallenges.click();
+    await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+    await getAward.click();
+    await expect(page.getByRole("heading", { name: "Congratulations — you can balance the exposure triangle" })).toBeVisible();
+    await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0);
+
+    await page.getByRole("button", { name: "Review challenges" }).click();
     await expect(page.getByRole("radio", { name: /^Portrait/ })).toBeChecked();
   });
 

@@ -22,9 +22,10 @@ import { SuccessOverlay } from "./SuccessOverlay";
 
 export type SimulatorAppProps = {
   onAllChallengesCompleteChange?: (complete: boolean) => void;
+  onClaimAward?: () => void;
 };
 
-export function SimulatorApp({ onAllChallengesCompleteChange }: SimulatorAppProps = {}) {
+export function SimulatorApp({ onAllChallengesCompleteChange, onClaimAward }: SimulatorAppProps = {}) {
   const [sceneId, setSceneId] = useState(DEFAULT_SCENE_ID);
   const scene = getScene(sceneId) ?? SCENES[0];
   const assets = useSceneAssets(scene);
@@ -64,7 +65,6 @@ export function SimulatorApp({ onAllChallengesCompleteChange }: SimulatorAppProp
   const allChallengesComplete = levelProgress.clearedIds.size === SCENES.length;
   const currentSceneComplete = sceneCleared || levelProgress.clearedIds.has(scene.id);
   const nextScene = SCENES[sceneIndex + 1];
-  const headerTargetScene = nextScene ?? SCENES[0];
   const headerActions = document.getElementById("header-actions");
 
   useEffect(() => {
@@ -84,9 +84,13 @@ export function SimulatorApp({ onAllChallengesCompleteChange }: SimulatorAppProp
 
   return (
     <div className="simulator-app">
-      {headerActions && currentSceneComplete && createPortal(
-        <button className="site-header__shortcut" type="button" onClick={() => setSceneId(headerTargetScene.id)}>
-          {nextScene ? `Next: ${nextScene.title} →` : `Review: ${headerTargetScene.title} ↻`}
+      {headerActions && currentSceneComplete && (nextScene || onClaimAward) && createPortal(
+        <button
+          className="site-header__shortcut"
+          type="button"
+          onClick={() => nextScene ? setSceneId(nextScene.id) : onClaimAward?.()}
+        >
+          {nextScene ? `Next: ${nextScene.title} →` : "Get award →"}
         </button>,
         headerActions,
       )}
