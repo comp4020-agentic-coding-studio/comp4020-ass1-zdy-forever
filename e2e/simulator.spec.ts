@@ -1,20 +1,26 @@
 import { expect, test } from "@playwright/test";
 
 test.beforeEach(async ({ page }) => {
-  await page.addInitScript(() => localStorage.setItem("camera-school-tutorial-complete", "true"));
+  await page.addInitScript(() => {
+    localStorage.setItem("camera-school-tutorial-complete", "true");
+    localStorage.setItem(
+      "camera-school-cleared-challenges",
+      JSON.stringify(["portrait", "motion", "night", "landscape"]),
+    );
+  });
   await page.goto("/");
 });
 
 test.describe("camera controls", () => {
   test("stepping ISO with the +/- buttons updates the displayed value", async ({ page }) => {
     const output = page.locator('output[for="control-iso"]');
-    await expect(output).toHaveText("ISO 200"); // Portrait scene default
+    await expect(output).toHaveText("ISO 100");
 
     await page.getByRole("button", { name: "Increase ISO" }).click();
-    await expect(output).toHaveText("ISO 400");
+    await expect(output).toHaveText("ISO 200");
 
     await page.getByRole("button", { name: "Decrease ISO" }).click();
-    await expect(output).toHaveText("ISO 200");
+    await expect(output).toHaveText("ISO 100");
   });
 
   test("stepping is clamped at the ends of the value table", async ({ page }) => {
@@ -30,20 +36,20 @@ test.describe("camera controls", () => {
   test("arrow keys on a slider step it the same way as the buttons", async ({ page }) => {
     const shutterInput = page.locator("#control-shutterSeconds");
     const output = page.locator('output[for="control-shutterSeconds"]');
-    await expect(output).toHaveText("1/125s");
+    await expect(output).toHaveText("1/2000s");
 
     await shutterInput.focus();
     await shutterInput.press("ArrowRight"); // steps up the value table: slower shutter
-    await expect(output).toHaveText("1/60s");
+    await expect(output).toHaveText("1/1000s");
 
     await shutterInput.press("ArrowLeft");
-    await expect(output).toHaveText("1/125s");
+    await expect(output).toHaveText("1/2000s");
   });
 
   test("reset restores the scene's default settings", async ({ page }) => {
     await page.getByRole("button", { name: "Increase ISO" }).click();
     await page.getByRole("button", { name: "Increase ISO" }).click();
-    await expect(page.locator('output[for="control-iso"]')).toHaveText("ISO 800");
+    await expect(page.locator('output[for="control-iso"]')).toHaveText("ISO 400");
 
     await page.getByRole("button", { name: "Reset to scene defaults" }).click();
     await expect(page.locator('output[for="control-iso"]')).toHaveText("ISO 200");
@@ -51,12 +57,12 @@ test.describe("camera controls", () => {
 });
 
 test.describe("scenes", () => {
-  test("switching scenes loads that scene's baseline settings", async ({ page }) => {
-    await expect(page.locator('output[for="control-iso"]')).toHaveText("ISO 200");
+  test("switching scenes starts from the shared minimum settings", async ({ page }) => {
+    await expect(page.locator('output[for="control-iso"]')).toHaveText("ISO 100");
 
     await page.getByRole("radio", { name: /^Landscape/ }).click();
     await expect(page.locator('output[for="control-iso"]')).toHaveText("ISO 100");
-    await expect(page.locator('output[for="control-aperture"]')).toHaveText("f/8");
+    await expect(page.locator('output[for="control-aperture"]')).toHaveText("f/1.4");
   });
 
   test("only the selected scene is in the tab order (roving tabindex)", async ({ page }) => {

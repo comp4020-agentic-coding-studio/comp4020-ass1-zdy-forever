@@ -22,8 +22,10 @@ test.describe("reduced motion", () => {
 test.describe("keyboard-only navigation", () => {
   test("tabbing reaches the scene selector then the camera controls in order", async ({ page }) => {
     await page.goto("/");
-    await page.keyboard.press("Tab"); // first (checked) scene radio
+    await page.keyboard.press("Tab");
+    await expect(page.getByRole("button", { name: "Review tutorials" })).toBeFocused();
 
+    await page.keyboard.press("Tab");
     await expect(page.getByRole("radio", { name: /^Portrait/ })).toBeFocused();
 
     // Roving tabindex: Tab again skips every other scene option and lands on
@@ -32,14 +34,15 @@ test.describe("keyboard-only navigation", () => {
     await expect(page.getByRole("slider", { name: "Reveal original vs. simulated" })).toBeFocused();
 
     await page.keyboard.press("Tab");
-    await expect(page.getByRole("button", { name: "Decrease ISO" })).toBeFocused();
+    await expect(page.locator("#control-iso")).toBeFocused();
 
     await page.keyboard.press("Tab");
-    await expect(page.locator("#control-iso")).toBeFocused();
+    await expect(page.getByRole("button", { name: "Increase ISO" })).toBeFocused();
   });
 
   test("a keyboard-focused control shows a visible focus outline", async ({ page }) => {
     await page.goto("/");
+    await page.keyboard.press("Tab"); // Review tutorials
     await page.keyboard.press("Tab"); // first (checked) scene radio
     const firstScene = page.getByRole("radio", { name: /^Portrait/ });
     await expect(firstScene).toBeFocused();

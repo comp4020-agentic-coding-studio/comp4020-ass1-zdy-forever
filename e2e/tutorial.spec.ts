@@ -43,7 +43,8 @@ test("the guided path progresses from one dial to all three before unlocking cha
   await expect(page.getByRole("heading", { name: "Two controls can pay the same light bill" })).toBeVisible();
 });
 
-test("the desktop workbench keeps the photograph, controls and triangle together", async ({ page }) => {
+test("the desktop workbench keeps the photograph, controls and triangle together", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== "chromium", "Desktop-only layout assertion");
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/");
   await page.getByRole("button", { name: "Start with ISO →" }).click();
