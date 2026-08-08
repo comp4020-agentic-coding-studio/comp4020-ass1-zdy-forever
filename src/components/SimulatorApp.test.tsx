@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import { cleanup, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { PixelImage } from "../domain/types";
 import { CHALLENGE_PROGRESS_STORAGE_KEY } from "../state/useLevelProgress";
 import { SimulatorApp } from "./SimulatorApp";
@@ -13,6 +13,10 @@ vi.mock("../browser/loadPixelImage", () => ({
     data: new Uint8ClampedArray(4 * 4 * 4).fill(128),
   })),
 }));
+
+beforeEach(() => {
+  vi.spyOn(window, "scrollTo").mockImplementation(() => undefined);
+});
 
 afterEach(() => {
   cleanup();

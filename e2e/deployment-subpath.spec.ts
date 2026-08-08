@@ -80,6 +80,9 @@ test("the built site loads correctly when served under a nested path prefix", as
       ]));
     });
     await page.reload();
+    await page.getByRole("button", { name: /Standard answer/ }).click();
+    await page.getByRole("button", { name: "Apply this answer" }).click();
+    await expect(page.getByRole("button", { name: "Next: Moving subject →" })).toBeVisible();
     await page.getByRole("button", { name: "Review tutorials" }).click();
     await expect(page.getByRole("button", { name: "Next: Aperture →" })).toBeVisible();
 

@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { createPortal } from "react-dom";
 import { useSceneAssets } from "../browser/useSceneAssets";
 import { calculateStops } from "../domain/exposure";
 import { assessSettings } from "../domain/explain";
@@ -53,8 +54,17 @@ export function SimulatorApp() {
   const stops = useMemo(() => calculateStops(camera.settings, scene.baseSettings), [camera.settings, scene]);
   const qualityIssues = unacceptableQualityKeys(assessment, scene.qualityTargets);
   const sceneCleared = assessment.exposure === "balanced" && qualityIssues.length === 0;
+  const sceneIndex = SCENES.findIndex((item) => item.id === scene.id);
   const isLastScene = scene.id === SCENES.at(-1)?.id;
   const allChallengesComplete = levelProgress.clearedIds.size === SCENES.length;
+  const currentSceneComplete = sceneCleared || levelProgress.clearedIds.has(scene.id);
+  const nextScene = SCENES[sceneIndex + 1];
+  const headerTargetScene = nextScene ?? SCENES[0];
+  const headerActions = document.getElementById("header-actions");
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+  }, [scene.id]);
 
   // A level clears the instant its settings land on a balanced exposure —
   // this reads off the assessment (pure settings math), not the processed
@@ -65,6 +75,12 @@ export function SimulatorApp() {
 
   return (
     <div className="simulator-app">
+      {headerActions && currentSceneComplete && createPortal(
+        <button className="site-header__shortcut" type="button" onClick={() => setSceneId(headerTargetScene.id)}>
+          {nextScene ? `Next: ${nextScene.title} →` : `Review: ${headerTargetScene.title} ↻`}
+        </button>,
+        headerActions,
+      )}
       <SceneSelector
         scenes={SCENES}
         selectedId={scene.id}

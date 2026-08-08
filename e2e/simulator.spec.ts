@@ -57,6 +57,27 @@ test.describe("camera controls", () => {
 });
 
 test.describe("scenes", () => {
+  test("a cleared challenge exposes a sticky header shortcut to the next challenge", async ({ page }) => {
+    const nextChallenge = page.getByRole("button", { name: "Next: Moving subject →" });
+    await expect(nextChallenge).toBeVisible();
+
+    await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+    expect(await page.evaluate(() => window.scrollY)).toBeGreaterThan(0);
+    await nextChallenge.click();
+
+    await expect(page.getByRole("radio", { name: /^Moving subject/ })).toBeChecked();
+    await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0);
+  });
+
+  test("the final challenge keeps a header shortcut for reviewing the sequence", async ({ page }) => {
+    await page.getByRole("radio", { name: /^Landscape/ }).click();
+    const reviewChallenges = page.getByRole("button", { name: "Review: Portrait ↻" });
+    await expect(reviewChallenges).toBeVisible();
+
+    await reviewChallenges.click();
+    await expect(page.getByRole("radio", { name: /^Portrait/ })).toBeChecked();
+  });
+
   test("switching scenes starts from the shared minimum settings", async ({ page }) => {
     await expect(page.locator('output[for="control-iso"]')).toHaveText("ISO 100");
 
