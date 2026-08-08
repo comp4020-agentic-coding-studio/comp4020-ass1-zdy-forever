@@ -2,25 +2,30 @@
 
 **What was the breakthrough that moved the work forward?**
 
-I'd built a whole local-only Playwright suite and everything was green:
-`pnpm check` passing, dev server looking right at every viewport I'd checked
-by hand. It felt done. Then I wrote one more test almost out of obligation —
-serve the built `dist/` under a fake nested path prefix, the actual shape of
-a GitHub Pages URL, instead of the flat `localhost:4173` every other test and
-every manual look had used. It failed immediately: three 404s, because
-`src/domain/scenes.ts` loaded scene images through root-absolute paths that
-only ever worked because my dev server happened to sit at the domain root.
-Every scene would have been broken on the real, marked URL, and nothing I'd
-looked at so far could have told me that — the bug was invisible from every
-angle except "simulate the actual deployment shape." That's the breakthrough:
-not the fix, which was a one-line path change per scene, but realising that
-"it works when I look at it" and "it works where it's marked" are different
-claims, and only one test in the whole suite was actually checking the second
-one.
+After the Week 2 crit, I put almost every requirement into `CLAUDE.md`. I
+thought more context would make the agent more reliable, but the opposite often
+happened: the context filled quickly, token usage grew rapidly, and the agent
+had to carry too much information into each small task. For this assignment, I
+changed my strategy. I explained only the current task and the constraints that
+directly affected it. This made context usage much more manageable and kept the
+conversation focused.
 
-**What did this work change about who I want to be as a developer?**
+However, being brief introduced a different problem. When I left design choices
+open, the agent sometimes produced interfaces that worked but did not match the
+style I had imagined. My breakthrough was realising that the answer is not
+simply “give less context.” A better approach is to first turn my natural-language
+ideas into a short, structured brief—sometimes using an online GPT to organise
+them—and then give that precise brief to the coding agent. This preserves
+context without giving away important design intent.
 
-I want to write at least one test per project that checks the deployment
-shape itself, not just the code running somewhere convenient — because the
-gap between "passes locally" and "works deployed" is exactly where I stopped
-looking once everything else was green.
+**What did this work change about who I want to be as a software developer?**
+
+I want to work in small, testable iterations instead of asking an agent to build
+the complete product in one attempt. This week I spent about A$30 on tokens
+across discarded versions. Because the agent was producing near-finished work
+rather than disposable demos, every failed direction was expensive to replace.
+Breaking the project into focused tasks let me review one decision at a time,
+correct problems earlier, and commit each successful improvement separately. It
+also kept the context understandable for both me and the agent. I now see task
+decomposition not only as project management, but as an essential part of
+working responsibly with AI-assisted development.
