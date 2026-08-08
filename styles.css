@@ -1711,6 +1711,42 @@ canvas {
   font-weight: 600;
 }
 
+.challenge-complete-summary {
+  display: flex;
+  align-items: center;
+  gap: .85rem;
+  padding: 1rem 1.15rem;
+  border: 1px solid rgb(48 209 88 / 30%);
+  border-radius: var(--radius-md);
+  background: rgb(48 209 88 / 10%);
+  color: #b9f8c8;
+}
+
+.challenge-complete-summary > span {
+  display: grid;
+  flex: 0 0 auto;
+  width: 2rem;
+  height: 2rem;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--success);
+  color: #031a09;
+  font-weight: 800;
+}
+
+.challenge-complete-summary div {
+  display: grid;
+  gap: .12rem;
+}
+
+.challenge-complete-summary strong {
+  color: #d8ffe1;
+}
+
+.challenge-complete-summary small {
+  color: #91dca3;
+}
+
 /* Success moment */
 
 .success-overlay {

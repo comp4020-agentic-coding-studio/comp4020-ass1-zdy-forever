@@ -53,6 +53,8 @@ export function SimulatorApp() {
   const stops = useMemo(() => calculateStops(camera.settings, scene.baseSettings), [camera.settings, scene]);
   const qualityIssues = unacceptableQualityKeys(assessment, scene.qualityTargets);
   const sceneCleared = assessment.exposure === "balanced" && qualityIssues.length === 0;
+  const isLastScene = scene.id === SCENES.at(-1)?.id;
+  const allChallengesComplete = levelProgress.clearedIds.size === SCENES.length;
 
   // A level clears the instant its settings land on a balanced exposure —
   // this reads off the assessment (pure settings math), not the processed
@@ -70,6 +72,15 @@ export function SimulatorApp() {
         isUnlocked={levelProgress.isUnlocked}
         clearedIds={levelProgress.clearedIds}
       />
+      {allChallengesComplete && (
+        <div className="challenge-complete-summary" role="status">
+          <span aria-hidden="true">✓</span>
+          <div>
+            <strong>All challenges complete</strong>
+            <small>You can revisit any scene and keep exploring its settings.</small>
+          </div>
+        </div>
+      )}
 
       <div className="camera-workbench">
         <div className="camera-workbench__visual">
@@ -83,13 +94,20 @@ export function SimulatorApp() {
               settingsSummary={formatSettings(camera.settings)}
             />
             {sceneCleared && (
-              <SuccessOverlay title="Scene cleared!" message="Balanced exposure — the next challenge is unlocked." />
+              <SuccessOverlay
+                title={isLastScene ? "All challenges complete!" : "Scene cleared!"}
+                message={isLastScene
+                  ? "You balanced every scene and protected what mattered."
+                  : "Balanced exposure — the next challenge is unlocked."}
+              />
             )}
           </div>
           <IndicatorBadges assessment={assessment} />
           <p className="quality-guidance" data-ready={sceneCleared || undefined} aria-live="polite">
             {sceneCleared
-              ? "Exposure and image quality both meet this scene's goal."
+              ? isLastScene
+                ? "Every challenge is complete. Keep exploring any scene or setting."
+                : "Exposure and image quality both meet this scene's goal."
               : assessment.exposure === "balanced" && qualityIssues.length > 0
                 ? `Exposure is balanced, but improve ${qualityIssueLabels(qualityIssues).join(" and ")} to clear the scene.`
                 : "Balance the exposure without sacrificing the image quality this scene needs."}

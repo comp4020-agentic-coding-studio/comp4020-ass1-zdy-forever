@@ -2,9 +2,12 @@
 import { act, cleanup, renderHook } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
 import type { SceneDefinition } from "../domain/types";
-import { useLevelProgress } from "./useLevelProgress";
+import { CHALLENGE_PROGRESS_STORAGE_KEY, useLevelProgress } from "./useLevelProgress";
 
-afterEach(cleanup);
+afterEach(() => {
+  cleanup();
+  window.localStorage.clear();
+});
 
 const BASE_SETTINGS = { iso: 400, aperture: 4, shutterSeconds: 1 / 125 };
 
@@ -60,5 +63,22 @@ describe("useLevelProgress", () => {
     expect(result.current.isUnlocked("motion")).toBe(true);
     expect(result.current.isUnlocked("night")).toBe(true);
     expect(result.current.isUnlocked("landscape")).toBe(true);
+  });
+
+  it("restores cleared scenes and unlocked successors after a new visit", () => {
+    const firstVisit = renderHook(() => useLevelProgress(SCENES));
+    act(() => firstVisit.result.current.markCleared("portrait"));
+    firstVisit.unmount();
+
+    const returnVisit = renderHook(() => useLevelProgress(SCENES));
+    expect(returnVisit.result.current.clearedIds).toContain("portrait");
+    expect(returnVisit.result.current.isUnlocked("motion")).toBe(true);
+    expect(window.localStorage.getItem(CHALLENGE_PROGRESS_STORAGE_KEY)).toBe('["portrait"]');
+  });
+
+  it("ignores unknown saved scene ids", () => {
+    window.localStorage.setItem(CHALLENGE_PROGRESS_STORAGE_KEY, '["portrait","retired-scene"]');
+    const { result } = renderHook(() => useLevelProgress(SCENES));
+    expect([...result.current.clearedIds]).toEqual(["portrait"]);
   });
 });

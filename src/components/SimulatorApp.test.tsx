@@ -3,6 +3,7 @@ import { cleanup, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import type { PixelImage } from "../domain/types";
+import { CHALLENGE_PROGRESS_STORAGE_KEY } from "../state/useLevelProgress";
 import { SimulatorApp } from "./SimulatorApp";
 
 vi.mock("../browser/loadPixelImage", () => ({
@@ -17,6 +18,7 @@ afterEach(() => {
   cleanup();
   vi.unstubAllGlobals();
   vi.clearAllMocks();
+  window.localStorage.clear();
 });
 
 async function waitForFrame() {
@@ -109,6 +111,26 @@ describe("SimulatorApp", () => {
     await user.click(screen.getByRole("button", { name: "Reset to scene defaults" }));
     await waitForFrame();
     expect(screen.getByText("ISO 200")).toBeInTheDocument(); // portrait's actual baseline, not the shared minimum
+  });
+
+  it("celebrates and preserves completion of the final challenge", async () => {
+    window.localStorage.setItem(
+      CHALLENGE_PROGRESS_STORAGE_KEY,
+      JSON.stringify(["portrait", "motion", "night"]),
+    );
+    const user = userEvent.setup();
+    render(<SimulatorApp />);
+    await waitForFrame();
+
+    await user.click(screen.getByRole("radio", { name: /^Landscape/ }));
+    await waitForFrame();
+    await user.click(screen.getByRole("button", { name: /Standard answer/ }));
+    await user.click(screen.getByRole("button", { name: "Apply this answer" }));
+    await waitForFrame();
+
+    expect(screen.getByText("All challenges complete!")).toBeInTheDocument();
+    expect(screen.getByText("All challenges complete")).toBeInTheDocument();
+    expect(window.localStorage.getItem(CHALLENGE_PROGRESS_STORAGE_KEY)).toContain("landscape");
   });
 
 });
