@@ -69,3 +69,23 @@ for (const viewport of [
     expect(scrollWidth).toBeLessThanOrEqual(clientWidth);
   });
 }
+
+test("challenge cards form a compact horizontal rail on phones", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/");
+
+  const selector = page.locator(".scene-selector");
+  const workbench = page.locator(".camera-workbench");
+  const metrics = await selector.evaluate((element) => ({
+    clientWidth: element.clientWidth,
+    scrollWidth: element.scrollWidth,
+    height: element.getBoundingClientRect().height,
+  }));
+  const selectorBox = await selector.boundingBox();
+  const workbenchBox = await workbench.boundingBox();
+  if (!selectorBox || !workbenchBox) throw new Error("The challenge layout did not render");
+
+  expect(metrics.scrollWidth).toBeGreaterThan(metrics.clientWidth);
+  expect(metrics.height).toBeLessThan(400);
+  expect(workbenchBox.y - selectorBox.y).toBeLessThan(450);
+});

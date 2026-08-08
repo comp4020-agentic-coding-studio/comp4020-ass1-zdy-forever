@@ -2174,7 +2174,28 @@ canvas {
   }
 
   .scene-selector {
-    grid-template-columns: 1fr;
+    display: flex;
+    overflow: auto hidden;
+    padding: .15rem .75rem .75rem 0;
+    scroll-padding-inline: .75rem;
+    scroll-snap-type: inline proximity;
+    scrollbar-width: none;
+    touch-action: pan-x;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .scene-selector::-webkit-scrollbar {
+    display: none;
+  }
+
+  .scene-selector__option {
+    flex: 0 0 min(82vw, 20rem);
+    min-height: 0;
+    scroll-snap-align: start;
+  }
+
+  .scene-selector__media {
+    aspect-ratio: 16 / 9;
   }
 }
 
