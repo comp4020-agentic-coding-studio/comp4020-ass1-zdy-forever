@@ -42,10 +42,17 @@ export function App() {
   );
   const tutorialsComplete = lessonIndex >= TUTORIALS.length;
   const challengesUnlocked = completedLessonIds.size === TUTORIALS.length;
+  const currentLessonComplete = !tutorialsComplete && completedLessonIds.has(TUTORIALS[lessonIndex].id);
+  const canContinueFromHeader = currentLessonComplete && (lessonIndex < TUTORIALS.length - 1 || challengesUnlocked);
   const nextIncompleteIndex = firstIncompleteLessonIndex(completedLessonIds);
   const navigableLessonIds = new Set(completedLessonIds);
   const headerActions = document.getElementById("header-actions");
   if (nextIncompleteIndex < TUTORIALS.length) navigableLessonIds.add(TUTORIALS[nextIncompleteIndex].id);
+
+  useEffect(() => {
+    if (showIntroduction) return;
+    window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+  }, [lessonIndex, showIntroduction]);
 
   useEffect(() => {
     if (tutorialsComplete) return;
@@ -84,6 +91,18 @@ export function App() {
     setLessonIndex(TUTORIALS.length);
   }
 
+  function navigateToLesson(index: number) {
+    setLessonIndex(index);
+  }
+
+  function continueFromHeader() {
+    if (lessonIndex >= TUTORIALS.length - 1) {
+      openChallenges();
+      return;
+    }
+    navigateToLesson(lessonIndex + 1);
+  }
+
   function reviewTutorials() {
     setLessonIndex(0);
     setShowIntroduction(false);
@@ -91,8 +110,12 @@ export function App() {
 
   return (
     <>
-      {headerActions && challengesUnlocked && !tutorialsComplete && createPortal(
-        <button className="site-header__shortcut" type="button" onClick={openChallenges}>Challenges →</button>,
+      {headerActions && canContinueFromHeader && createPortal(
+        <button className="site-header__shortcut" type="button" onClick={continueFromHeader}>
+          {lessonIndex === TUTORIALS.length - 1 && challengesUnlocked
+            ? "Challenges →"
+            : `Next: ${TUTORIALS[lessonIndex + 1].title} →`}
+        </button>,
         headerActions,
       )}
       {showIntroduction && !tutorialsComplete ? (
@@ -118,7 +141,7 @@ export function App() {
           onLessonComplete={() => recordLessonComplete(TUTORIALS[lessonIndex].id)}
           completedLessonIds={completedLessonIds}
           navigableLessonIds={navigableLessonIds}
-          onNavigate={setLessonIndex}
+          onNavigate={navigateToLesson}
         />
       )}
     </>

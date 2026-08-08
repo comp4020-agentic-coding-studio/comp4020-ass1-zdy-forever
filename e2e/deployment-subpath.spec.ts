@@ -69,6 +69,20 @@ test("the built site loads correctly when served under a nested path prefix", as
     const paperColor = await page.evaluate(() => getComputedStyle(document.body).backgroundColor);
     expect(paperColor).not.toBe("");
 
+    await page.evaluate(() => {
+      localStorage.setItem("camera-school-tutorial-complete", "true");
+      localStorage.setItem("camera-school-completed-lessons", JSON.stringify([
+        "tutorial-iso",
+        "tutorial-aperture",
+        "tutorial-shutter",
+        "tutorial-two-dials",
+        "tutorial-three-dials",
+      ]));
+    });
+    await page.reload();
+    await page.getByRole("button", { name: "Review tutorials" }).click();
+    await expect(page.getByRole("button", { name: "Next: Aperture →" })).toBeVisible();
+
     expect(consoleErrors, `console errors: ${consoleErrors.join(", ")}`).toEqual([]);
     expect(failedRequests, `failed requests: ${failedRequests.join(", ")}`).toEqual([]);
   } finally {

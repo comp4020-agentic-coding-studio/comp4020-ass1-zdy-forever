@@ -8,13 +8,20 @@ async function clickTimes(page: Page, name: string, times: number) {
 
 test("the guided path progresses from one dial to all three before unlocking challenges", async ({ page }) => {
   await page.goto("/");
+  await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+  expect(await page.evaluate(() => window.scrollY)).toBeGreaterThan(0);
   await page.getByRole("button", { name: "Start with ISO →" }).click();
   await expect(page.getByRole("heading", { name: "ISO amplifies the signal" })).toBeVisible();
+  await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0);
   await expect(page.getByRole("heading", { name: "The challenges are unlocked" })).toHaveCount(0);
 
   await clickTimes(page, "Increase ISO", 4);
-  await page.getByRole("button", { name: "Aperture — available" }).click();
+  const nextTutorial = page.getByRole("button", { name: "Next: Aperture →" });
+  await expect(nextTutorial).toBeVisible();
+  await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+  await nextTutorial.click();
   await expect(page.getByRole("heading", { name: "Aperture is the lens opening" })).toBeVisible();
+  await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0);
 
   await clickTimes(page, "Decrease Aperture", 4);
   await page.getByRole("button", { name: "Shutter speed — available" }).click();
