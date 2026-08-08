@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
 import { useSceneAssets } from "../browser/useSceneAssets";
+import { scrollToPageTop } from "../browser/scrollToPageTop";
 import { calculateStops } from "../domain/exposure";
 import { assessSettings } from "../domain/explain";
 import { qualityIssueLabels, unacceptableQualityKeys } from "../domain/quality";
@@ -19,7 +20,11 @@ import { IndicatorBadges } from "./IndicatorBadges";
 import { SceneSelector } from "./SceneSelector";
 import { SuccessOverlay } from "./SuccessOverlay";
 
-export function SimulatorApp() {
+export type SimulatorAppProps = {
+  onAllChallengesCompleteChange?: (complete: boolean) => void;
+};
+
+export function SimulatorApp({ onAllChallengesCompleteChange }: SimulatorAppProps = {}) {
   const [sceneId, setSceneId] = useState(DEFAULT_SCENE_ID);
   const scene = getScene(sceneId) ?? SCENES[0];
   const assets = useSceneAssets(scene);
@@ -63,8 +68,12 @@ export function SimulatorApp() {
   const headerActions = document.getElementById("header-actions");
 
   useEffect(() => {
-    window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+    scrollToPageTop();
   }, [scene.id]);
+
+  useEffect(() => {
+    onAllChallengesCompleteChange?.(allChallengesComplete);
+  }, [allChallengesComplete, onAllChallengesCompleteChange]);
 
   // A level clears the instant its settings land on a balanced exposure —
   // this reads off the assessment (pure settings math), not the processed

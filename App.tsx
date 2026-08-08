@@ -1,9 +1,12 @@
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
+import { scrollToPageTop } from "./src/browser/scrollToPageTop";
 import { GuidedTutorial } from "./src/components/GuidedTutorial";
 import { Opening } from "./src/components/Opening";
 import { SimulatorApp } from "./src/components/SimulatorApp";
+import { SCENES } from "./src/domain/scenes";
 import { TUTORIALS } from "./src/domain/tutorials";
+import { loadClearedIds } from "./src/state/useLevelProgress";
 
 const TUTORIAL_STORAGE_KEY = "camera-school-tutorial-complete";
 const LESSON_PROGRESS_STORAGE_KEY = "camera-school-completed-lessons";
@@ -40,6 +43,9 @@ export function App() {
   const [showIntroduction, setShowIntroduction] = useState(() =>
     !hasCompletedTutorials() && loadCompletedLessonIds().size === 0,
   );
+  const [allChallengesComplete, setAllChallengesComplete] = useState(
+    () => loadClearedIds(SCENES).size === SCENES.length,
+  );
   const tutorialsComplete = lessonIndex >= TUTORIALS.length;
   const challengesUnlocked = completedLessonIds.size === TUTORIALS.length;
   const currentLessonComplete = !tutorialsComplete && completedLessonIds.has(TUTORIALS[lessonIndex].id);
@@ -51,7 +57,7 @@ export function App() {
 
   useEffect(() => {
     if (showIntroduction) return;
-    window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+    scrollToPageTop();
   }, [lessonIndex, showIntroduction]);
 
   useEffect(() => {
@@ -124,13 +130,15 @@ export function App() {
         <section className="challenge-section" aria-labelledby="challenge-heading">
           <div className="challenge-section__header">
             <div>
-              <p className="tutorial__eyebrow">Tutorial complete</p>
-              <h2 id="challenge-heading">The challenges are unlocked</h2>
-              <p>Now the camera stops holding your hand. Balance each scene and choose which visual cost you can accept.</p>
+              <p className="tutorial__eyebrow">{allChallengesComplete ? "All challenges complete" : "Tutorial complete"}</p>
+              <h2 id="challenge-heading">{allChallengesComplete ? "You balanced every scene" : "The challenges are unlocked"}</h2>
+              <p>{allChallengesComplete
+                ? "Revisit any photograph to compare different settings and keep exploring the trade-offs."
+                : "Now the camera stops holding your hand. Balance each scene and choose which visual cost you can accept."}</p>
             </div>
             <button type="button" onClick={reviewTutorials}>Review tutorials</button>
           </div>
-          <SimulatorApp />
+          <SimulatorApp onAllChallengesCompleteChange={setAllChallengesComplete} />
         </section>
       ) : (
         <GuidedTutorial

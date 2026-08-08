@@ -57,6 +57,12 @@ test.describe("camera controls", () => {
 });
 
 test.describe("scenes", () => {
+  test("the challenge introduction reflects completed progress", async ({ page }) => {
+    await expect(page.getByRole("heading", { name: "You balanced every scene" })).toBeVisible();
+    await expect(page.getByText("Revisit any photograph to compare different settings and keep exploring the trade-offs.")).toBeVisible();
+    await expect(page.getByRole("heading", { name: "The challenges are unlocked" })).toHaveCount(0);
+  });
+
   test("a cleared challenge exposes a sticky header shortcut to the next challenge", async ({ page }) => {
     const nextChallenge = page.getByRole("button", { name: "Next: Moving subject →" });
     await expect(nextChallenge).toBeVisible();

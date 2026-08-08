@@ -9,7 +9,7 @@ export type UseLevelProgressResult = {
   markCleared: (sceneId: string) => void;
 };
 
-function loadClearedIds(scenes: readonly SceneDefinition[]): ReadonlySet<string> {
+export function loadClearedIds(scenes: readonly SceneDefinition[]): ReadonlySet<string> {
   if (typeof window === "undefined") return new Set();
 
   try {
