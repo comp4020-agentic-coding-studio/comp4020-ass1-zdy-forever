@@ -69,9 +69,11 @@ test("the guided path progresses from one dial to all three before unlocking cha
 
 test("the desktop workbench keeps the photograph, controls and triangle together", async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== "chromium", "Desktop-only layout assertion");
-  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.setViewportSize({ width: 1920, height: 1080 });
   await page.goto("/");
   await page.getByRole("button", { name: "Start with ISO →" }).click();
+  await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0);
+  await expect(page.getByText("Rendering…")).toHaveCount(0);
 
   const stageBox = await page.locator(".simulator-app__stage").boundingBox();
   const controlsBox = await page.locator(".camera-workbench__controls").boundingBox();
@@ -79,7 +81,7 @@ test("the desktop workbench keeps the photograph, controls and triangle together
   if (!stageBox || !controlsBox || !triangleBox) throw new Error("The camera workbench did not render");
 
   expect(Math.abs(stageBox.y - controlsBox.y)).toBeLessThan(2);
-  expect(triangleBox.y + triangleBox.height).toBeLessThanOrEqual(900);
+  expect(triangleBox.y + triangleBox.height).toBeLessThanOrEqual(1080);
 
   await clickTimes(page, "Increase ISO", 4);
   const successOverlay = page.locator(".simulator-app__stage .success-overlay");

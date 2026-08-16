@@ -2186,8 +2186,23 @@ canvas {
     align-items: start;
   }
 
+  .camera-workbench__controls {
+    gap: .55rem;
+    padding: .75rem;
+  }
+
+  .control-panel {
+    gap: .55rem;
+  }
+
+  .control-panel__row {
+    min-height: 2.85rem;
+    padding-block: .2rem;
+  }
+
   .camera-workbench__triangle .exposure-triangle-diagram {
-    width: min(100%, 13rem);
+    width: min(100%, 11.5rem);
+    margin-top: .4rem;
   }
 }
 
