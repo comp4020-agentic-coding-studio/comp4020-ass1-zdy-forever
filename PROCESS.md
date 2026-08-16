@@ -33,10 +33,13 @@ resolution final frames
 
 ### 2. Replace an open sandbox with a staged learning path
 
-**What I asked.** The original simulator exposed three controls without
-preparation. I asked for one variable, then two, then all three, and only then
-the challenges. More copy in the sandbox would not help beginners isolate
-cause and effect.
+**What I asked.** My original version had no teaching sequence: it exposed all
+three controls and expected users to learn through free exploration. I realised
+that this worked poorly for complete beginners, who could change several
+settings without understanding which one caused the result. I therefore chose
+to turn the sandbox into a structured learning path—one variable, then two,
+then all three, and only then the challenges—so users could build a deeper
+understanding step by step.
 
 **What the agent did.** The agent built an introduction, three single-dial
 lessons, a two-dial lesson and a full-triangle lesson, each with a different
